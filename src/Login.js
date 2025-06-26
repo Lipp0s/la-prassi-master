@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 // import logo from './logo.svg';
 const logo = process.env.PUBLIC_URL + '/logo192.png';
 
@@ -187,6 +188,35 @@ function Login() {
             <Button type="submit" disabled={loading}>{loading ? "Signing In..." : "Sign In"}</Button>
             {message && <div style={{ color: message.startsWith("Login successful") ? "#4caf50" : "#ff5252", marginTop: 10, textAlign: "center" }}>{message}</div>}
           </Form>
+          <div style={{ width: '100%', margin: '18px 0 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <GoogleLogin
+              onSuccess={async credentialResponse => {
+                setMessage('Login Google in corso...');
+                try {
+                  const res = await fetch('http://localhost:8000/google-auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credential: credentialResponse.credential })
+                  });
+                  const data = await res.json();
+                  if (data.success) {
+                    setMessage('Login Google riuscito!');
+                    localStorage.setItem('loggedIn', 'true');
+                    localStorage.setItem('username', data.user.username);
+                    setTimeout(() => navigate('/'), 1200);
+                  } else {
+                    setMessage('Login Google fallito: ' + data.error);
+                  }
+                } catch (err) {
+                  setMessage('Login Google fallito: Network error');
+                }
+              }}
+              onError={() => {
+                setMessage('Errore nel login con Google');
+              }}
+              width="260"
+            />
+          </div>
           <BottomText>
             New to BOIOLAX? <Link to="/register" style={{ color: Accent, textDecoration: 'none', fontWeight: 700 }}>Create an account</Link>
           </BottomText>

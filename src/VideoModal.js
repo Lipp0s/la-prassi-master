@@ -1,10 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
 import videoSections from './videos';
-import { keyframes } from 'styled-components';
-const logo = process.env.PUBLIC_URL + '/logo192.png';
+
+// Modern SVG Logo as a React component
+const ModernLogo = () => (
+  <svg width="36" height="36" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="mainGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#A35C7A" />
+        <stop offset="1" stopColor="#7B3F61" />
+      </linearGradient>
+    </defs>
+    <circle cx="20" cy="20" r="18" fill="url(#mainGradient)" stroke="#fff" strokeWidth="2" />
+    <polygon points="16,13 29,20 16,27" fill="#fff" opacity="0.95" />
+  </svg>
+);
 
 const fadeIn = keyframes`
   from { opacity: 0; transform: scale(0.96); }
@@ -14,8 +26,8 @@ const fadeIn = keyframes`
 const Overlay = styled.div`
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.82);
-  backdrop-filter: blur(8px) saturate(1.1);
+  background: rgba(24,24,32,0.92);
+  backdrop-filter: blur(16px) saturate(1.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -28,28 +40,22 @@ const Overlay = styled.div`
 `;
 
 const Modal = styled.div`
-  background: rgba(35,35,43,0.98);
-  border-radius: 20px;
-  padding: 2rem 2rem 1.5rem 2rem;
-  max-width: 92vw;
-  max-height: 92vh;
-  box-shadow: 0 8px 40px 0 #000a, 0 2px 12px #A35C7A33;
+  background: rgba(35,35,55,0.98);
+  border-radius: 3rem;
+  box-shadow: 0 12px 48px 0 #A35C7A55, 0 2px 12px #000a;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   animation: modalPopIn 0.38s cubic-bezier(.4,2,.6,1);
-  @keyframes modalPopIn {
-    from { opacity: 0; transform: scale(0.96); }
-    to { opacity: 1; transform: scale(1); }
-  }
+  border: none;
 `;
 
 const CloseBtn = styled.button`
   position: absolute;
   top: 1.2rem;
   right: 1.2rem;
-  background: rgba(30,30,40,0.7);
+  background: linear-gradient(120deg, #A35C7A 0%, #7B3F61 100%);
   border: none;
   color: #fff;
   font-size: 2.2rem;
@@ -64,24 +70,35 @@ const CloseBtn = styled.button`
   transition: background 0.2s, box-shadow 0.2s, color 0.2s, transform 0.2s;
   z-index: 2;
   &:hover, &:focus {
-    background: linear-gradient(120deg, #A35C7A 0%, #7B3F61 100%);
+    background: linear-gradient(120deg, #7B3F61 0%, #A35C7A 100%);
     color: #fff;
     box-shadow: 0 4px 24px #A35C7A55, 0 2px 12px #000a;
     outline: none;
-    transform: scale(1.08);
+    transform: scale(1.12) rotate(-8deg);
   }
 `;
 
+const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 1.2rem;
+`;
+
 const Title = styled.h2`
-  margin: 0 0 1rem 0;
+  margin: 0;
   color: #fff;
+  font-size: 2.1rem;
+  font-weight: 900;
+  text-align: center;
+  text-shadow: 0 2px 12px #000a;
 `;
 
 const PlayerContainer = styled.div`
-  background: #181828ee;
-  border-radius: 18px;
+  background: rgba(24,24,32,0.92);
+  border-radius: 3rem;
   box-shadow: 0 8px 40px 0 #A35C7A33, 0 2px 12px #000a;
-  border: 2.5px solid #A35C7A55;
+  border: none;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -93,10 +110,11 @@ const PlayerContainer = styled.div`
   aspect-ratio: 16/9;
   overflow: hidden;
   animation: ${fadeIn} 0.4s cubic-bezier(.4,2,.6,1) both;
+  pointer-events: auto;
   @media (max-width: 600px) {
     max-width: 100vw;
     border-radius: 0;
-    border-width: 0 0 2.5px 0;
+    border: none;
   }
 `;
 
@@ -106,44 +124,8 @@ const StyledIframe = styled.iframe`
   border: none;
   background: #000;
   display: block;
-`;
-
-const DeviceFrame = styled.div`
-  background: #222;
-  border-radius: 36px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 0 8px #111;
-  padding: 1.5rem 0.7rem;
-  width: 340px;
-  height: 700px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  @media (max-width: 400px) {
-    width: 98vw;
-    height: 70vw;
-    min-height: 400px;
-    min-width: 220px;
-  }
-`;
-
-const DeviceNotch = styled.div`
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120px;
-  height: 12px;
-  background: #333;
-  border-radius: 8px;
-`;
-
-const InstaFrame = styled.iframe`
-  width: 100%;
-  height: 600px;
-  border: none;
-  border-radius: 24px;
-  background: #000;
+  border-radius: 3rem;
+  pointer-events: auto;
 `;
 
 const Spinner = styled.div`
@@ -158,53 +140,21 @@ const Spinner = styled.div`
   border-radius: 50%;
   animation: spin 1s linear infinite;
   z-index: 10;
+  pointer-events: none;
   @keyframes spin {
     0% { transform: translate(-50%, -50%) rotate(0deg); }
     100% { transform: translate(-50%, -50%) rotate(360deg); }
   }
 `;
 
-const BackBtn = styled.button`
-  position: absolute;
-  top: 1.2rem;
-  left: 1.2rem;
-  background: rgba(30,30,40,0.7);
-  border: none;
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 700;
-  border-radius: 18px;
-  padding: 0.5rem 1.3rem 0.5rem 2.2rem;
-  box-shadow: 0 2px 12px #A35C7A33, 0 2px 8px #000a;
-  cursor: pointer;
-  z-index: 3;
-  transition: background 0.22s, box-shadow 0.22s, color 0.22s, transform 0.22s;
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  &:hover, &:focus {
-    background: linear-gradient(120deg, #A35C7A 0%, #7B3F61 100%);
-    color: #fff;
-    box-shadow: 0 4px 24px #A35C7A55, 0 2px 12px #000a;
-    outline: none;
-    transform: scale(1.08);
+function getPlayableUrl(video) {
+  if (video.type === 'youtube') {
+    return video.url.includes('?')
+      ? video.url + '&autoplay=1&mute=1'
+      : video.url + '?autoplay=1&mute=1';
   }
-`;
-
-const BackLogo = styled.img`
-  width: 22px;
-  height: 22px;
-  margin-right: 0.5rem;
-  filter: drop-shadow(0 2px 8px #A35C7A88);
-`;
-
-const ModalFade = styled.div`
-  animation: modalFadeIn 0.7s cubic-bezier(.4,2,.6,1);
-  @keyframes modalFadeIn {
-    from { opacity: 0; transform: scale(0.97) translateY(32px); }
-    to { opacity: 1; transform: scale(1) translateY(0); }
-  }
-`;
+  return video.url;
+}
 
 function VideoModal() {
   const { id } = useParams();
@@ -212,12 +162,11 @@ function VideoModal() {
   const modalRef = useRef();
   const video = videoSections.flatMap(section => section.videos).find(v => v.id === id);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  // Close on Escape key
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === 'Escape') navigate('/');
-      // Focus trap
       if (e.key === 'Tab' && modalRef.current) {
         const focusable = modalRef.current.querySelectorAll('button, [tabindex]:not([tabindex="-1"])');
         const first = focusable[0];
@@ -235,32 +184,68 @@ function VideoModal() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [navigate]);
 
+  // Timeout for loading spinner
+  useEffect(() => {
+    if (!loading) return;
+    const timeout = setTimeout(() => setError(true), 8000);
+    return () => clearTimeout(timeout);
+  }, [loading]);
+
   if (!video) return null;
 
+  const handleOverlayMouseDown = (e) => {
+    if (e.target === e.currentTarget) {
+      navigate('/');
+    }
+  };
+
+  // Helper to get YouTube watch URL
+  const getYoutubeWatchUrl = (url) => {
+    const match = url.match(/\/embed\/([\w-]+)/);
+    return match ? `https://www.youtube.com/watch?v=${match[1]}` : url;
+  };
+
   return (
-    <Overlay onClick={() => navigate('/')}> 
-      <ModalFade>
-        <Modal ref={modalRef} onClick={e => e.stopPropagation()}>
-          <BackBtn onClick={() => navigate(-1)} aria-label="Back">
-            <BackLogo src={logo} alt="Back to home" />
-            Back
-          </BackBtn>
-          <CloseBtn onClick={() => navigate('/')} aria-label="Close video">
-            <FaTimes />
-          </CloseBtn>
-          <Title style={{color: '#fff', marginBottom: 12, textAlign: 'center', textShadow: '0 2px 12px #000a'}}>{video.title}</Title>
-          <PlayerContainer>
-            {loading && <Spinner />}
+    <Overlay onMouseDown={handleOverlayMouseDown}>
+      <Modal ref={modalRef}>
+        <CloseBtn onClick={() => navigate('/')} aria-label="Close video">
+          <FaTimes />
+        </CloseBtn>
+        <TitleRow>
+          <ModernLogo />
+          <Title>{video.title}</Title>
+        </TitleRow>
+        <PlayerContainer>
+          {loading && !error && <Spinner />}
+          {error && video.type === 'youtube' && (
+            <div style={{ color: '#e1306c', textAlign: 'center', padding: '2rem', fontWeight: 700 }}>
+              Impossibile caricare il video.<br />
+              Potrebbe non essere embeddabile o la connessione è lenta.<br />
+              <a href={getYoutubeWatchUrl(video.url)} target="_blank" rel="noopener noreferrer" style={{marginTop: '1.5rem', display: 'inline-block', padding: '0.7rem 1.5rem', borderRadius: '1.5rem', border: 'none', background: '#A35C7A', color: '#fff', fontWeight: 700, textDecoration: 'none'}}>Guarda su YouTube</a>
+            </div>
+          )}
+          {!error && video.type === 'youtube' && (
             <StyledIframe
-              src={video.url}
+              src={getPlayableUrl(video)}
               allow="autoplay; encrypted-media; picture-in-picture"
               allowFullScreen
               title={video.title}
               onLoad={() => setLoading(false)}
+              onError={() => { setLoading(false); setError(true); }}
             />
-          </PlayerContainer>
-        </Modal>
-      </ModalFade>
+          )}
+          {!error && video.type !== 'youtube' && (
+            <video
+              src={video.url}
+              controls
+              autoPlay
+              style={{ width: '100%', height: '100%', borderRadius: '3rem', background: '#000' }}
+              onLoadedData={() => setLoading(false)}
+              onError={() => { setLoading(false); setError(true); }}
+            />
+          )}
+        </PlayerContainer>
+      </Modal>
     </Overlay>
   );
 }

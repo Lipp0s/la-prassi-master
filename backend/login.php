@@ -15,16 +15,16 @@ if (!isset($data->username) || !isset($data->password)) {
 $username = trim($data->username);
 $password = $data->password;
 
-$stmt = $conn->prepare("SELECT username, password FROM users WHERE username = :user OR email = :user");
-$stmt->bindValue(":user", $username, SQLITE3_TEXT);
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = :username");
+$stmt->bindValue(":username", $username, SQLITE3_TEXT);
 $result = $stmt->execute();
-
-if ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-    if (password_verify($password, $row['password'])) {
-        echo json_encode(["success" => true]);
-    } else {
-        echo json_encode(["success" => false, "error" => "Invalid credentials"]);
+$user = $result->fetchArray(SQLITE3_ASSOC);
+if ($user && password_verify($password, $user['password'])) {
+    if ($user['is_verified'] != 1) {
+        echo json_encode(["success" => false, "error" => "Email non verificata. Controlla la tua casella di posta."]);
+        exit;
     }
+    echo json_encode(["success" => true, "username" => $user['username'], "email" => $user['email']]);
 } else {
     echo json_encode(["success" => false, "error" => "Invalid credentials"]);
 }

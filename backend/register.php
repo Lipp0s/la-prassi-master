@@ -21,14 +21,26 @@ if (strlen($username) < 3 || strlen($password) < 6) {
     exit;
 }
 
+// Genera un token di verifica
+$verification_token = bin2hex(random_bytes(32));
+
 $hash = password_hash($password, PASSWORD_DEFAULT);
-$stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)");
+$stmt = $conn->prepare("INSERT INTO users (username, email, password, is_verified, verification_token) VALUES (:username, :email, :password, 0, :token)");
 $stmt->bindValue(":username", $username, SQLITE3_TEXT);
 $stmt->bindValue(":email", $email, SQLITE3_TEXT);
 $stmt->bindValue(":password", $hash, SQLITE3_TEXT);
+$stmt->bindValue(":token", $verification_token, SQLITE3_TEXT);
 
 if ($stmt->execute()) {
-    echo json_encode(["success" => true]);
+    // Invia la mail di verifica
+    $verify_link = 'http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . "/verify-email.php?token=" . $verification_token;
+    $subject = "Verifica il tuo indirizzo email";
+    $message = "<h2>Benvenuto $username!</h2><p>Per completare la registrazione, clicca sul link qui sotto per verificare la tua email:</p><p><a href='$verify_link'>$verify_link</a></p>";
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $headers .= "From: noreply@" . $_SERVER['HTTP_HOST'] . "\r\n";
+    mail($email, $subject, $message, $headers);
+    echo json_encode(["success" => true, "message" => "Registrazione avvenuta. Controlla la tua email per la verifica."]);
 } else {
     $error = $conn->lastErrorMsg();
     if (strpos($error, 'UNIQUE') !== false) {

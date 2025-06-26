@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@react-oauth/google": "^0.12.2",
     "cra-template-pwa": "2.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
