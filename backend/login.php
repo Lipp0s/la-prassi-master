@@ -15,19 +15,21 @@ if (!isset($data->username) || !isset($data->password)) {
 $username = trim($data->username);
 $password = $data->password;
 
-$stmt = $conn->prepare("SELECT username, password, is_verified, id FROM users WHERE username = :user OR email = :user");
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = :user OR email = :user");
 $stmt->bindValue(":user", $username, SQLITE3_TEXT);
 $result = $stmt->execute();
 $user = $result->fetchArray(SQLITE3_ASSOC);
 
 if ($user && password_verify($password, $user['password'])) {
     if ($user['is_verified'] == 0) {
-        echo json_encode(["success" => false, "error" => "Please verify your email before logging in."]);
+        echo json_encode(["success" => false, "error" => "Email non verificata. Controlla la tua casella di posta."]);
         exit;
     }
-    session_start();
-    $_SESSION['user_id'] = $user['id'];
-    echo json_encode(["success" => true]);
+    echo json_encode([
+        "success" => true,
+        "username" => $user['username'],
+        "email" => $user['email']
+    ]);
 } else {
     echo json_encode(["success" => false, "error" => "Invalid credentials"]);
 }

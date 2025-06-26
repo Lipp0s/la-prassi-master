@@ -3,7 +3,7 @@ const videoSections = [
     title: 'Trailers',
     videos: [
       { id: 'tr1', type: 'youtube', title: 'Big Buck Bunny', url: 'https://www.youtube.com/embed/aqz-KE-bpKQ', thumb: 'https://img.youtube.com/vi/aqz-KE-bpKQ/hqdefault.jpg' },
-      { id: 'tr2', type: 'youtube', title: 'New Featured Video', url: 'https://www.youtube.com/embed/Uc9m1G6qYyg', thumb: 'https://img.youtube.com/vi/Uc9m1G6qYyg/hqdefault.jpg' },
+      { id: 'tr2', type: 'youtube', title: 'DAMN', url: 'https://www.youtube.com/embed/Uc9m1G6qYyg', thumb: 'https://img.youtube.com/vi/Uc9m1G6qYyg/hqdefault.jpg' },
       { id: 'tr3', type: 'youtube', title: 'Tears of Steel', url: 'https://www.youtube.com/embed/R6MlUcmOul8', thumb: 'https://img.youtube.com/vi/R6MlUcmOul8/hqdefault.jpg' },
       { id: 'tr4', type: 'youtube', title: 'Caminandes 3: Llama Drama', url: 'https://www.youtube.com/embed/SkVqJ1SGeL0', thumb: 'https://img.youtube.com/vi/SkVqJ1SGeL0/hqdefault.jpg' },
       { id: 'tr5', type: 'youtube', title: 'Cosmos Laundromat', url: 'https://www.youtube.com/embed/Y-rmzh0PI3c', thumb: 'https://img.youtube.com/vi/Y-rmzh0PI3c/hqdefault.jpg' },

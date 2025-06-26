@@ -73,8 +73,6 @@ if ($stmt->execute()) {
         $mail->send();
         echo json_encode(["success" => true, "message" => "Registration successful. Please check your email to verify your account."]);
     } catch (Exception $e) {
-        // If email fails, we should ideally roll back the user creation or have a cron job for retries.
-        // For simplicity, we'll just log the error and inform the user.
         error_log("PHPMailer Error: " . $mail->ErrorInfo);
         echo json_encode(["success" => false, "error" => "Could not send verification email. Please contact support."]);
     }

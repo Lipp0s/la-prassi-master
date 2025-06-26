@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 const logo = process.env.PUBLIC_URL + '/logo192.png';
 
 const Accent = '#A35C7A';
@@ -133,7 +134,10 @@ function Register() {
   const [confirm, setConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [verifyMsg, setVerifyMsg] = useState('');
   const navigate = useNavigate();
+
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -141,8 +145,17 @@ function Register() {
       setMessage("Passwords do not match!");
       return;
     }
-    setLoading(true);
+    if (!validateEmail(email)) {
+      setMessage("Invalid email format!");
+      return;
+    }
+    if (password.length < 6) {
+      setMessage("Password must be at least 6 characters!");
+      return;
+    }
     setMessage("");
+    setVerifyMsg("");
+    setLoading(true);
     try {
       const res = await fetch("http://localhost:8000/register.php", {
         method: "POST",
@@ -158,12 +171,16 @@ function Register() {
         return;
       }
       if (res.ok && data.success) {
-        setMessage(data.message || "Registration successful! Please check your email.");
+        setMessage("");
+        setVerifyMsg(data.message || "Registrazione avvenuta! Controlla la tua email per la verifica.");
+        setUsername(""); setPassword(""); setEmail(""); setConfirm("");
       } else {
         setMessage("Registration failed: " + (data.error || "Errore sconosciuto"));
+        setVerifyMsg("");
       }
     } catch (err) {
       setMessage("Registration failed: Network error");
+      setVerifyMsg("");
     }
     setLoading(false);
   };
@@ -213,7 +230,41 @@ function Register() {
             />
             <Button type="submit" disabled={loading}>{loading ? "Creating..." : "Create Account"}</Button>
             {message && <div style={{ color: message.startsWith("Registration successful") ? "#4caf50" : "#ff5252", marginTop: 10, textAlign: "center" }}>{message}</div>}
+            {verifyMsg && (
+              <div style={{background:'#232336', color:'#fff', padding:'1.2rem', borderRadius:12, margin:'1.5rem 0', textAlign:'center'}}>
+                {verifyMsg}
+              </div>
+            )}
           </Form>
+          <div style={{ width: '100%', margin: '18px 0 0 0', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <GoogleLogin
+              onSuccess={async credentialResponse => {
+                setMessage('Registrazione Google in corso...');
+                try {
+                  const res = await fetch('http://localhost:8000/google-auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credential: credentialResponse.credential })
+                  });
+                  const data = await res.json();
+                  if (data.success) {
+                    setMessage('Registrazione Google riuscita!');
+                    localStorage.setItem('loggedIn', 'true');
+                    localStorage.setItem('username', data.user.username);
+                    setTimeout(() => navigate('/'), 1200);
+                  } else {
+                    setMessage('Registrazione Google fallita: ' + data.error);
+                  }
+                } catch (err) {
+                  setMessage('Registrazione Google fallita: Network error');
+                }
+              }}
+              onError={() => {
+                setMessage('Errore nella registrazione con Google');
+              }}
+              width="260"
+            />
+          </div>
           <BottomText>
             Already have an account? <Link to="/login" style={{ color: Accent, textDecoration: 'none', fontWeight: 700 }}>Sign in</Link>
           </BottomText>

@@ -15,4 +15,10 @@ $conn->exec("CREATE TABLE IF NOT EXISTS users (
     verification_token TEXT,
     is_verified INTEGER DEFAULT 0
 )");
+
+// Ensure email, is_verified, and verification_token columns exist
+$columns = [];
+foreach ($conn->query("PRAGMA table_info(users)") as $column) {
+    $columns[] = $column['name'];
+}
 ?> 

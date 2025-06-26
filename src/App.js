@@ -1,10 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import styled, { createGlobalStyle, keyframes } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import Home from './Home';
 import VideoModal from './VideoModal';
 import Login from './Login';
 import Register from './Register';
+import VerifyEmail from './VerifyEmail';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -14,44 +16,52 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     overflow-x: hidden;
   }
+  *, *:before, *:after {
+    box-sizing: border-box;
+  }
 `;
 
-const bgAnim = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-`;
-
-const Background = styled.div`
+const AnimatedBackground = styled.div`
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   z-index: 0;
-  background: linear-gradient(120deg, #1e1e2f 0%, #232323 50%, #e1306c 100%);
-  background-size: 200% 200%;
-  animation: ${bgAnim} 18s ease-in-out infinite;
-  filter: blur(0px) brightness(0.9);
+  background: linear-gradient(120deg, #181818 0%, #A35C7A 100%);
+  animation: bgMove 12s ease-in-out infinite alternate;
+  @keyframes bgMove {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
 `;
 
 const AppContainer = styled.div`
-  min-height: 100vh;
   position: relative;
   z-index: 1;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.2rem 2.5rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 `;
 
 function App() {
   return (
-    <Router>
-      <GlobalStyle />
-      <Background />
-      <AppContainer>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/video/:id" element={<VideoModal />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </AppContainer>
-    </Router>
+    <GoogleOAuthProvider clientId="175770132889-9bcso2m8fpa79iv31q1funakmfn3ced3.apps.googleusercontent.com">
+      <Router>
+        <GlobalStyle />
+        <AnimatedBackground />
+        <AppContainer>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/video/:id" element={<VideoModal />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+          </Routes>
+        </AppContainer>
+      </Router>
+    </GoogleOAuthProvider>
   );
 }
 
