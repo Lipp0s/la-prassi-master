@@ -21,4 +21,11 @@ $columns = [];
 foreach ($conn->query("PRAGMA table_info(users)") as $column) {
     $columns[] = $column['name'];
 }
+
+// Creo la tabella delle sessioni se non esiste
+$conn->exec("CREATE TABLE IF NOT EXISTS sessions (
+    token TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    expires_at INTEGER NOT NULL
+)");
 ?> 

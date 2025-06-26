@@ -71,7 +71,22 @@ if ($stmt->execute()) {
         $mail->AltBody = "Please copy and paste the following URL into your browser to verify your email address: $verification_link";
 
         $mail->send();
-        echo json_encode(["success" => true, "message" => "Registration successful. Please check your email to verify your account."]);
+        // Dopo la registrazione, login automatico: genero token di sessione
+        $token = bin2hex(random_bytes(32));
+        $expires = time() + 60*60*24*7;
+        $stmt2 = $conn->prepare("INSERT INTO sessions (token, username, expires_at) VALUES (:token, :username, :expires)");
+        $stmt2->bindValue(":token", $token, SQLITE3_TEXT);
+        $stmt2->bindValue(":username", $username, SQLITE3_TEXT);
+        $stmt2->bindValue(":expires", $expires, SQLITE3_INTEGER);
+        $stmt2->execute();
+        setcookie('session_token', $token, [
+            'expires' => $expires,
+            'path' => '/',
+            'secure' => true,
+            'httponly' => true,
+            'samesite' => 'Strict',
+        ]);
+        echo json_encode(["success" => true, "message" => "Registration successful! Please check your email to verify your account.", "username" => $username]);
     } catch (Exception $e) {
         error_log("PHPMailer Error: " . $mail->ErrorInfo);
         echo json_encode(["success" => false, "error" => "Could not send verification email. Please contact support."]);
