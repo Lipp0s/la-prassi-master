@@ -149,12 +149,18 @@ function Register() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, username, password }),
       });
-      const data = await res.json();
-      if (data.success) {
-        setMessage("Registration successful! Redirecting to login...");
-        setTimeout(() => navigate("/login"), 1200);
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        setMessage("Registration failed: Risposta non valida dal server.");
+        setLoading(false);
+        return;
+      }
+      if (res.ok && data.success) {
+        setMessage(data.message || "Registration successful! Please check your email.");
       } else {
-        setMessage("Registration failed: " + data.error);
+        setMessage("Registration failed: " + (data.error || "Errore sconosciuto"));
       }
     } catch (err) {
       setMessage("Registration failed: Network error");
