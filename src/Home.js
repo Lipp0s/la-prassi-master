@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useNavigate, Link } from 'react-router-dom';
 import { FaHeart, FaRegHeart, FaShareAlt, FaSearch } from 'react-icons/fa';
@@ -443,13 +443,14 @@ const ScrollTopBtn = styled.button`
 
 // 4. Animated Loading Spinner
 const Spinner = styled.div`
-  width: 54px;
-  height: 54px;
-  border: 5px solid #A35C7A33;
-  border-top: 5px solid #A35C7A;
+  width: 72px;
+  height: 72px;
+  border: 7px solid #A35C7A33;
+  border-top: 7px solid #A35C7A;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 2rem auto;
+  margin: 3rem auto 1rem auto;
+  display: block;
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -497,6 +498,14 @@ const SearchInput = styled.input`
   margin-left: 0.7rem;
 `;
 
+const highlightText = (text, search) => {
+  if (!search) return text;
+  const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return text.split(regex).map((part, i) =>
+    regex.test(part) ? <mark key={i} style={{background:'#ffe066',color:'#7B3F61',padding:'0 2px',borderRadius:3}}>{part}</mark> : part
+  );
+};
+
 function Home() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
@@ -527,7 +536,7 @@ function Home() {
     localStorage.removeItem("username");
     setLoggedIn(false);
     setUser("");
-    window.location.reload();
+    window.location.href = "/login";
   };
 
   const handleCardClick = (id) => {
@@ -553,6 +562,12 @@ function Home() {
   const [filteredSections, setFilteredSections] = useState(videoSections);
   const [activeCard, setActiveCard] = useState(null);
   const [rowRefs] = useState(() => []);
+
+  const searchInputRef = useRef(null);
+
+  useEffect(() => {
+    if (searchInputRef.current) searchInputRef.current.focus();
+  }, []);
 
   // 4. Search bar filter
   useEffect(() => {
@@ -686,7 +701,12 @@ function Home() {
             </WatchButton>
           </FeaturedOverlay>
         </FeaturedSection>
-        {loading ? <Spinner /> : (
+        {loading ? (
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',minHeight:'220px'}}>
+            <Spinner />
+            <div style={{color:'#ffe066',fontWeight:700,fontSize:'1.2rem',marginTop:'1rem'}}>Caricamento...</div>
+          </div>
+        ) : (
           <>
             {/* Toast notification */}
             {toast && <Toast>{toast}</Toast>}
@@ -694,10 +714,14 @@ function Home() {
             <SearchBar>
               <FaSearch />
               <SearchInput
+                ref={searchInputRef}
                 placeholder="Cerca un video..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
               />
+              {search && (
+                <button onClick={()=>setSearch('')} style={{background:'none',border:'none',color:'#fff',fontSize:18,cursor:'pointer',marginLeft:4}} aria-label="Cancella ricerca">×</button>
+              )}
             </SearchBar>
             {/* Recently Watched */}
             {recentVideos.length > 0 && (
@@ -716,7 +740,7 @@ function Home() {
                             <Thumb src={video.thumb} alt={video.title} />
                           </ThumbWrapper>
                           <CardInfo>
-                            <Title>{video.title}</Title>
+                            <Title>{highlightText(video.title, search)}</Title>
                             <FaShareAlt onClick={e => { e.stopPropagation(); shareVideo(video.id); }} style={{ cursor: 'pointer', marginLeft: 8 }} title="Copia link" />
                             {favorites.includes(video.id) ? (
                               <FaHeart onClick={e => { e.stopPropagation(); toggleFavorite(video.id); }} style={{ color: '#e1306c', cursor: 'pointer', marginLeft: 8 }} title="Rimuovi dai preferiti" />
@@ -732,6 +756,9 @@ function Home() {
               </SectionWrapper>
             )}
             {/* Video Sections */}
+            {filteredSections.length === 0 && (
+              <div style={{textAlign:'center',color:'#aaa',margin:'2.5rem 0',fontSize:'1.2rem'}}>Nessun video trovato</div>
+            )}
             {filteredSections.map((section, i) => (
               <SectionWrapper key={section.title}>
                 <AnimatedSection>
@@ -748,7 +775,7 @@ function Home() {
                             <Thumb src={video.thumb} alt={video.title} />
                           </ThumbWrapper>
                           <CardInfo>
-                            <Title>{video.title}</Title>
+                            <Title>{highlightText(video.title, search)}</Title>
                             <FaShareAlt onClick={e => { e.stopPropagation(); shareVideo(video.id); }} style={{ cursor: 'pointer', marginLeft: 8 }} title="Copia link" />
                             {favorites.includes(video.id) ? (
                               <FaHeart onClick={e => { e.stopPropagation(); toggleFavorite(video.id); }} style={{ color: '#e1306c', cursor: 'pointer', marginLeft: 8 }} title="Rimuovi dai preferiti" />

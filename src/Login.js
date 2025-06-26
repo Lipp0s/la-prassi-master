@@ -137,6 +137,14 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!username || !password) {
+      setMessage("Username and password are required!");
+      return;
+    }
+    if (password.length < 6) {
+      setMessage("Password must be at least 6 characters!");
+      return;
+    }
     setLoading(true);
     setMessage("");
     try {
