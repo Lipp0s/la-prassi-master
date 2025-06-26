@@ -3,6 +3,8 @@ import styled, { keyframes } from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
 import videoSections from './videos';
+import ReactPlayer from 'react-player';
+import screenfull from 'screenfull';
 
 // Modern SVG Logo as a React component
 const ModernLogo = () => (
@@ -118,14 +120,35 @@ const PlayerContainer = styled.div`
   }
 `;
 
-const StyledIframe = styled.iframe`
+const PlayerControls = styled.div`
   width: 100%;
-  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(24,24,32,0.92);
+  padding: 0.7rem 1.2rem;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  border-radius: 0 0 3rem 3rem;
+`;
+
+const ControlBtn = styled.button`
+  background: none;
   border: none;
-  background: #000;
-  display: block;
-  border-radius: 3rem;
-  pointer-events: auto;
+  color: #fff;
+  font-size: 1.5rem;
+  margin: 0 0.5rem;
+  cursor: pointer;
+  &:hover { color: #ffe066; }
+`;
+
+const Time = styled.span`
+  color: #ffe066;
+  font-size: 1.1rem;
+  min-width: 60px;
+  text-align: center;
 `;
 
 const Spinner = styled.div`
@@ -163,6 +186,13 @@ function VideoModal() {
   const video = videoSections.flatMap(section => section.videos).find(v => v.id === id);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [playing, setPlaying] = useState(true);
+  const [muted, setMuted] = useState(false);
+  const [volume, setVolume] = useState(0.8);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [played, setPlayed] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const playerRef = useRef();
 
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -205,6 +235,20 @@ function VideoModal() {
     return match ? `https://www.youtube.com/watch?v=${match[1]}` : url;
   };
 
+  const formatTime = s => {
+    if (isNaN(s)) return '0:00';
+    const m = Math.floor(s/60);
+    const sec = Math.floor(s%60).toString().padStart(2,'0');
+    return `${m}:${sec}`;
+  };
+
+  const handleFullscreen = () => {
+    if (screenfull.isEnabled && playerRef.current) {
+      screenfull.request(playerRef.current.wrapper);
+      setFullscreen(true);
+    }
+  };
+
   return (
     <Overlay onMouseDown={handleOverlayMouseDown}>
       <Modal ref={modalRef}>
@@ -215,7 +259,7 @@ function VideoModal() {
           <ModernLogo />
           <Title>{video.title}</Title>
         </TitleRow>
-        <PlayerContainer>
+        <PlayerContainer ref={playerRef}>
           {loading && !error && <Spinner />}
           {error && video.type === 'youtube' && (
             <div style={{ color: '#e1306c', textAlign: 'center', padding: '2rem', fontWeight: 700 }}>
@@ -224,25 +268,33 @@ function VideoModal() {
               <a href={getYoutubeWatchUrl(video.url)} target="_blank" rel="noopener noreferrer" style={{marginTop: '1.5rem', display: 'inline-block', padding: '0.7rem 1.5rem', borderRadius: '1.5rem', border: 'none', background: '#A35C7A', color: '#fff', fontWeight: 700, textDecoration: 'none'}}>Guarda su YouTube</a>
             </div>
           )}
-          {!error && video.type === 'youtube' && (
-            <StyledIframe
-              src={getPlayableUrl(video)}
-              allow="autoplay; encrypted-media; picture-in-picture"
-              allowFullScreen
-              title={video.title}
-              onLoad={() => setLoading(false)}
-              onError={() => { setLoading(false); setError(true); }}
-            />
-          )}
-          {!error && video.type !== 'youtube' && (
-            <video
-              src={video.url}
-              controls
-              autoPlay
-              style={{ width: '100%', height: '100%', borderRadius: '3rem', background: '#000' }}
-              onLoadedData={() => setLoading(false)}
-              onError={() => { setLoading(false); setError(true); }}
-            />
+          {!error && (
+            <>
+              <ReactPlayer
+                url={video.url}
+                playing={playing}
+                muted={muted}
+                volume={volume}
+                width="100%"
+                height="100%"
+                controls={false}
+                onReady={() => setLoading(false)}
+                onError={() => { setLoading(false); setError(true); }}
+                onPlay={() => setPlaying(true)}
+                onPause={() => setPlaying(false)}
+                onProgress={state => setPlayed(state.playedSeconds)}
+                onDuration={d => setDuration(d)}
+                style={{borderRadius:'3rem',background:'#000'}}
+              />
+              <PlayerControls>
+                <ControlBtn onClick={()=>setPlaying(p=>!p)} aria-label={playing?'Pausa':'Play'}>{playing ? '❚❚' : '►'}</ControlBtn>
+                <input type="range" min={0} max={duration} value={played} step={0.1} onChange={e=>playerRef.current.seekTo(parseFloat(e.target.value))} style={{flex:1,margin:'0 1rem'}} aria-label="Seek" />
+                <Time>{formatTime(played)} / {formatTime(duration)}</Time>
+                <ControlBtn onClick={()=>setMuted(m=>!m)} aria-label={muted?'Attiva audio':'Muta'}>{muted ? '🔇' : '🔊'}</ControlBtn>
+                <input type="range" min={0} max={1} step={0.01} value={volume} onChange={e=>setVolume(parseFloat(e.target.value))} style={{width:70,margin:'0 0.5rem'}} aria-label="Volume" />
+                <ControlBtn onClick={handleFullscreen} aria-label="Fullscreen">⛶</ControlBtn>
+              </PlayerControls>
+            </>
           )}
         </PlayerContainer>
       </Modal>
