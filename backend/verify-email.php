@@ -11,17 +11,22 @@ if (!isset($_GET['token'])) {
     exit;
 }
 $token = $_GET['token'];
-$stmt = $conn->prepare("SELECT * FROM users WHERE verification_token = :token");
-$stmt->bindValue(":token", $token, SQLITE3_TEXT);
-$result = $stmt->execute();
-$user = $result->fetchArray(SQLITE3_ASSOC);
-if ($user) {
-    $update = $conn->prepare("UPDATE users SET is_verified = 1, verification_token = NULL WHERE id = :id");
-    $update->bindValue(":id", $user['id'], SQLITE3_INTEGER);
-    $update->execute();
-    echo json_encode(["success" => true, "message" => "Email verificata! Ora puoi accedere."]);
-} else {
-    echo json_encode(["success" => false, "error" => "Token non valido o già usato."]);
+
+try {
+    $stmt = $conn->prepare("SELECT * FROM users WHERE verification_token = :token");
+    $stmt->bindParam(":token", $token, PDO::PARAM_STR);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($user) {
+        $update = $conn->prepare("UPDATE users SET is_verified = TRUE, verification_token = NULL WHERE id = :id");
+        $update->bindParam(":id", $user['id'], PDO::PARAM_INT);
+        $update->execute();
+        echo json_encode(["success" => true, "message" => "Email verificata! Ora puoi accedere."]);
+    } else {
+        echo json_encode(["success" => false, "error" => "Token non valido o già usato."]);
+    }
+} catch (PDOException $e) {
+    echo json_encode(["success" => false, "error" => "Database error: " . $e->getMessage()]);
 }
-$conn->close();
 ?> 

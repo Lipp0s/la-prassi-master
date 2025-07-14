@@ -3,22 +3,32 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$db_file = __DIR__ . '/users.db';
-$conn = new SQLite3($db_file);
+// Include configuration
+require_once __DIR__ . '/config.php';
 
-// Create table if it doesn't exist
-$conn->exec("CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    verification_token TEXT,
-    is_verified INTEGER DEFAULT 0
-)");
-
-// Ensure email, is_verified, and verification_token columns exist
-$columns = [];
-foreach ($conn->query("PRAGMA table_info(users)") as $column) {
-    $columns[] = $column['name'];
+// PostgreSQL connection with SSL
+try {
+    $dsn = "pgsql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";sslmode=" . DB_SSL_MODE;
+    $options = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false,
+    ];
+    
+    $conn = new PDO($dsn, DB_USER, DB_PASS, $options);
+    
+    // Create users table if it doesn't exist
+    $conn->exec("CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        verification_token VARCHAR(255),
+        is_verified BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+    
+} catch(PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
 }
 ?> 

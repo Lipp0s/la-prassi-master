@@ -10,31 +10,31 @@ if (empty($token)) {
     die('Verification token is missing.');
 }
 
-$stmt = $conn->prepare("SELECT id, is_verified FROM users WHERE verification_token = :token");
-$stmt->bindValue(':token', $token, SQLITE3_TEXT);
-$result = $stmt->execute();
-$user = $result->fetchArray(SQLITE3_ASSOC);
+try {
+    $stmt = $conn->prepare("SELECT id, is_verified FROM users WHERE verification_token = :token");
+    $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$user) {
-    die('Invalid verification token.');
+    if (!$user) {
+        die('Invalid verification token.');
+    }
+
+    if ($user['is_verified']) {
+        die('This account has already been verified.');
+    }
+
+    $updateStmt = $conn->prepare("UPDATE users SET is_verified = TRUE, verification_token = NULL WHERE id = :id");
+    $updateStmt->bindParam(':id', $user['id'], PDO::PARAM_INT);
+
+    if ($updateStmt->execute()) {
+        // You can redirect to a page on your frontend
+        // header('Location: http://localhost:3000/login?verified=true');
+        echo 'Your account has been successfully verified! You can now log in.';
+    } else {
+        die('Failed to verify account. Please try again or contact support.');
+    }
+} catch (PDOException $e) {
+    die('Database error: ' . $e->getMessage());
 }
-
-if ($user['is_verified']) {
-    die('This account has already been verified.');
-}
-
-$updateStmt = $conn->prepare("UPDATE users SET is_verified = 1, verification_token = NULL WHERE id = :id");
-$updateStmt->bindValue(':id', $user['id'], SQLITE3_INTEGER);
-
-if ($updateStmt->execute()) {
-    // You can redirect to a page on your frontend
-    // header('Location: http://localhost:3000/login?verified=true');
-    echo 'Your account has been successfully verified! You can now log in.';
-} else {
-    die('Failed to verify account. Please try again or contact support.');
-}
-
-$stmt->close();
-$updateStmt->close();
-$conn->close();
 ?> 

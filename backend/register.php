@@ -35,59 +35,51 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 $hash = password_hash($password, PASSWORD_DEFAULT);
 $verification_token = bin2hex(random_bytes(32));
 
-$stmt = $conn->prepare("INSERT INTO users (username, email, password, verification_token) VALUES (:username, :email, :password, :token)");
-$stmt->bindValue(":username", $username, SQLITE3_TEXT);
-$stmt->bindValue(":email", $email, SQLITE3_TEXT);
-$stmt->bindValue(":password", $hash, SQLITE3_TEXT);
-$stmt->bindValue(":token", $verification_token, SQLITE3_TEXT);
+try {
+    $stmt = $conn->prepare("INSERT INTO users (username, email, password, verification_token) VALUES (:username, :email, :password, :token)");
+    $stmt->bindParam(":username", $username, PDO::PARAM_STR);
+    $stmt->bindParam(":email", $email, PDO::PARAM_STR);
+    $stmt->bindParam(":password", $hash, PDO::PARAM_STR);
+    $stmt->bindParam(":token", $verification_token, PDO::PARAM_STR);
 
-set_error_handler(function($errno, $errstr, $errfile, $errline) {
-    http_response_code(200);
-    echo json_encode(["success" => false, "error" => "Server error: $errstr ($errfile:$errline)"]);
-    exit;
-});
+    if ($stmt->execute()) {
+        $mail = new PHPMailer(true);
+        try {
+            //Server settings
+            $mail->isSMTP();
+            $mail->Host       = SMTP_HOST;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = SMTP_USERNAME;
+            $mail->Password   = SMTP_PASSWORD;
+            $mail->SMTPSecure = SMTP_SECURE;
+            $mail->Port       = SMTP_PORT;
 
-if ($stmt->execute()) {
-    $mail = new PHPMailer(true);
-    try {
-        //Server settings
-        $mail->isSMTP();
-        $mail->Host       = SMTP_HOST;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = SMTP_USERNAME;
-        $mail->Password   = SMTP_PASSWORD;
-        $mail->SMTPSecure = SMTP_SECURE;
-        $mail->Port       = SMTP_PORT;
+            //Recipients
+            $mail->setFrom(SMTP_USERNAME, 'La Prassi');
+            $mail->addAddress($email, $username);
 
-        //Recipients
-        $mail->setFrom(SMTP_USERNAME, 'La Prassi');
-        $mail->addAddress($email, $username);
+            // Content
+            $mail->isHTML(true);
+            $verification_link = APP_URL . '/verify.php?token=' . $verification_token;
+            $mail->Subject = 'Verify your email address';
+            $mail->Body    = "Please click the following link to verify your email address: <a href=\"$verification_link\">$verification_link</a>";
+            $mail->AltBody = "Please copy and paste the following URL into your browser to verify your email address: $verification_link";
 
-        // Content
-        $mail->isHTML(true);
-        $verification_link = APP_URL . '/verify.php?token=' . $verification_token;
-        $mail->Subject = 'Verify your email address';
-        $mail->Body    = "Please click the following link to verify your email address: <a href=\"$verification_link\">$verification_link</a>";
-        $mail->AltBody = "Please copy and paste the following URL into your browser to verify your email address: $verification_link";
-
-        $mail->send();
-        echo json_encode(["success" => true, "message" => "Registration successful. Please check your email to verify your account."]);
-    } catch (Exception $e) {
-        error_log("PHPMailer Error: " . $mail->ErrorInfo);
-        echo json_encode(["success" => false, "error" => "Could not send verification email. Please contact support."]);
-    }
-} else {
-    $error = $conn->lastErrorMsg();
-    if (strpos($error, 'UNIQUE') !== false) {
-        if (strpos($error, 'email') !== false) {
-            echo json_encode(["success" => false, "error" => "Email already exists"]);
-        } else {
-            echo json_encode(["success" => false, "error" => "Username already exists"]);
+            $mail->send();
+            echo json_encode(["success" => true, "message" => "Registration successful. Please check your email to verify your account."]);
+        } catch (Exception $e) {
+            error_log("PHPMailer Error: " . $mail->ErrorInfo);
+            echo json_encode(["success" => false, "error" => "Could not send verification email. Please contact support."]);
         }
+    }
+} catch (PDOException $e) {
+    $error = $e->getMessage();
+    if (strpos($error, 'users_username_key') !== false) {
+        echo json_encode(["success" => false, "error" => "Username already exists"]);
+    } elseif (strpos($error, 'users_email_key') !== false) {
+        echo json_encode(["success" => false, "error" => "Email already exists"]);
     } else {
-        echo json_encode(["success" => false, "error" => $error]);
+        echo json_encode(["success" => false, "error" => "Database error: " . $error]);
     }
 }
-$stmt->close();
-$conn->close();
 ?> 
