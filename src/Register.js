@@ -173,7 +173,6 @@ function Register() {
       if (res.ok && data.success) {
         setMessage("");
         setVerifyMsg(data.message || "Registrazione avvenuta! Controlla la tua email per la verifica.");
-        localStorage.setItem("token", data.token);
         setUsername(""); setPassword(""); setEmail(""); setConfirm("");
       } else {
         setMessage("Registration failed: " + (data.error || "Errore sconosciuto"));

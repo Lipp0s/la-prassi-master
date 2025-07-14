@@ -21,27 +21,15 @@ $result = $stmt->execute();
 $user = $result->fetchArray(SQLITE3_ASSOC);
 
 if ($user && password_verify($password, $user['password'])) {
-    if (!$user['is_verified']) {
-        echo json_encode(["success" => false, "error" => "Email non verificata!"]);
+    if ($user['is_verified'] == 0) {
+        echo json_encode(["success" => false, "error" => "Email non verificata. Controlla la tua casella di posta."]);
         exit;
     }
-    // Genera token di sessione random
-    $token = bin2hex(random_bytes(32));
-    $expires = time() + 60*60*24*7; // 7 giorni
-    $stmt2 = $conn->prepare("INSERT INTO sessions (token, username, expires_at) VALUES (:token, :username, :expires)");
-    $stmt2->bindValue(":token", $token, SQLITE3_TEXT);
-    $stmt2->bindValue(":username", $user['username'], SQLITE3_TEXT);
-    $stmt2->bindValue(":expires", $expires, SQLITE3_INTEGER);
-    $stmt2->execute();
-    setcookie('session_token', $token, [
-        'expires' => $expires,
-        'path' => '/',
-        'secure' => true,
-        'httponly' => true,
-        'samesite' => 'Strict',
+    echo json_encode([
+        "success" => true,
+        "username" => $user['username'],
+        "email" => $user['email']
     ]);
-    echo json_encode(["success" => true, "username" => $user['username']]);
-    exit;
 } else {
     echo json_encode(["success" => false, "error" => "Invalid credentials"]);
 }
