@@ -5,6 +5,7 @@ import { FaTimes } from 'react-icons/fa';
 import videoSections from './videos';
 import ReactPlayer from 'react-player';
 import screenfull from 'screenfull';
+import ReviewForm from './ReviewForm';
 
 // Modern SVG Logo as a React component
 const ModernLogo = () => (
@@ -223,6 +224,9 @@ function VideoModal() {
 
   if (!video) return null;
 
+  // Debug: logga l'id del video
+  console.log('video.id:', video.id, typeof video.id);
+
   const handleOverlayMouseDown = (e) => {
     if (e.target === e.currentTarget) {
       navigate('/');
@@ -297,6 +301,10 @@ function VideoModal() {
             </>
           )}
         </PlayerContainer>
+        {/* Form recensione sotto il player */}
+        <div style={{marginTop: '2rem', width: '100%'}}>
+          <ReviewForm video_id={Number(video.id)} />
+        </div>
       </Modal>
     </Overlay>
   );

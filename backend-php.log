@@ -1,0 +1,80 @@
+[Tue Jul 15 15:27:10 2025] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Tue Jul 15 15:27:36 2025] 127.0.0.1:41508 Accepted
+[Tue Jul 15 15:27:36 2025] 127.0.0.1:41508 [200]: OPTIONS /register.php
+[Tue Jul 15 15:27:36 2025] 127.0.0.1:41508 Closing
+[Tue Jul 15 15:27:36 2025] 127.0.0.1:41514 Accepted
+[Tue Jul 15 15:27:37 2025] 127.0.0.1:41514 [200]: POST /register.php
+[Tue Jul 15 15:27:37 2025] 127.0.0.1:41514 Closing
+[Tue Jul 15 15:27:49 2025] 127.0.0.1:57834 Accepted
+[Tue Jul 15 15:27:49 2025] 127.0.0.1:57834 [200]: OPTIONS /register.php
+[Tue Jul 15 15:27:49 2025] 127.0.0.1:57834 Closing
+[Tue Jul 15 15:27:49 2025] 127.0.0.1:57850 Accepted
+[Tue Jul 15 15:27:53 2025] 127.0.0.1:57850 [200]: POST /register.php
+[Tue Jul 15 15:27:53 2025] 127.0.0.1:57850 Closing
+[Tue Jul 15 15:28:05 2025] 192.168.0.216:39602 Accepted
+[Tue Jul 15 15:28:06 2025] 192.168.0.216:39602 [200]: GET /verify.php?token=e45a700f5783ea7a097d87375f85f5fa2802b6cea88da6bff9ea3a8f14210efd
+[Tue Jul 15 15:28:06 2025] 192.168.0.216:39602 Closing
+[Tue Jul 15 15:28:06 2025] 192.168.0.216:39606 Accepted
+[Tue Jul 15 15:28:06 2025] 192.168.0.216:39606 [404]: GET /favicon.ico - No such file or directory
+[Tue Jul 15 15:28:06 2025] 192.168.0.216:39606 Closing
+[Tue Jul 15 15:28:24 2025] 127.0.0.1:33684 Accepted
+[Tue Jul 15 15:28:24 2025] 127.0.0.1:33684 [200]: OPTIONS /login.php
+[Tue Jul 15 15:28:24 2025] 127.0.0.1:33684 Closing
+[Tue Jul 15 15:28:24 2025] 127.0.0.1:33696 Accepted
+[Tue Jul 15 15:28:24 2025] 127.0.0.1:33696 [200]: POST /login.php
+[Tue Jul 15 15:28:24 2025] 127.0.0.1:33696 Closing
+[Tue Jul 15 15:36:44 2025] 127.0.0.1:49714 Accepted
+[Tue Jul 15 15:36:44 2025] 127.0.0.1:49714 [200]: OPTIONS /google-auth.php
+[Tue Jul 15 15:36:44 2025] 127.0.0.1:49714 Closing
+[Tue Jul 15 15:36:44 2025] 127.0.0.1:49724 Accepted
+[Tue Jul 15 15:36:45 2025] PHP Notice:  Only variables should be passed by reference in /home/pappetta/Documents/GitHub/la-prassi/backend/google-auth.php on line 69
+[Tue Jul 15 15:36:45 2025] 127.0.0.1:49724 [200]: POST /google-auth.php
+[Tue Jul 15 15:36:45 2025] 127.0.0.1:49724 Closing
+[Tue Jul 15 15:58:24 2025] 127.0.0.1:39302 Accepted
+[Tue Jul 15 15:58:24 2025] 127.0.0.1:39302 [404]: GET / - No such file or directory
+[Tue Jul 15 15:58:24 2025] 127.0.0.1:39302 Closing
+[Tue Jul 15 16:02:30 2025] 127.0.0.1:39750 Accepted
+[Tue Jul 15 16:02:30 2025] 127.0.0.1:39750 [200]: OPTIONS /google-auth.php
+[Tue Jul 15 16:02:30 2025] 127.0.0.1:39750 Closing
+[Tue Jul 15 16:02:30 2025] 127.0.0.1:39752 Accepted
+[Tue Jul 15 16:02:31 2025] 127.0.0.1:39752 [200]: POST /google-auth.php
+[Tue Jul 15 16:02:31 2025] 127.0.0.1:39752 Closing
+[Tue Jul 15 16:08:21 2025] 127.0.0.1:50726 Accepted
+[Tue Jul 15 16:08:21 2025] 127.0.0.1:50726 [200]: OPTIONS /google-auth.php
+[Tue Jul 15 16:08:21 2025] 127.0.0.1:50726 Closing
+[Tue Jul 15 16:08:21 2025] 127.0.0.1:50738 Accepted
+[Tue Jul 15 16:08:22 2025] 127.0.0.1:50738 [200]: POST /google-auth.php
+[Tue Jul 15 16:08:22 2025] 127.0.0.1:50738 Closing
+[Tue Jul 15 16:37:17 2025] 127.0.0.1:46128 Accepted
+[Tue Jul 15 16:37:17 2025] 127.0.0.1:46128 [404]: GET / - No such file or directory
+[Tue Jul 15 16:37:17 2025] 127.0.0.1:46128 Closing
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46142 Accepted
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46142 [404]: GET / - No such file or directory
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46142 Closing
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46152 Accepted
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46152 [404]: GET / - No such file or directory
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46152 Closing
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46168 Accepted
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46168 [404]: GET /favicon.ico - No such file or directory
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46168 Closing
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46182 Accepted
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46182 [404]: GET / - No such file or directory
+[Tue Jul 15 16:37:18 2025] 127.0.0.1:46182 Closing
+[Tue Jul 15 16:37:48 2025] 127.0.0.1:51946 Accepted
+[Tue Jul 15 16:37:48 2025] 127.0.0.1:51946 [404]: GET / - No such file or directory
+[Tue Jul 15 16:37:48 2025] 127.0.0.1:51946 Closing
+[Tue Jul 15 16:37:57 2025] 127.0.0.1:54204 Accepted
+[Tue Jul 15 16:37:57 2025] 127.0.0.1:54204 [404]: GET / - No such file or directory
+[Tue Jul 15 16:37:57 2025] 127.0.0.1:54204 Closing
+[Tue Jul 15 16:37:57 2025] 127.0.0.1:54218 Accepted
+[Tue Jul 15 16:37:57 2025] 127.0.0.1:54224 Accepted
+[Tue Jul 15 16:37:58 2025] 127.0.0.1:54218 [404]: GET /favicon.ico - No such file or directory
+[Tue Jul 15 16:37:58 2025] 127.0.0.1:54218 Closing
+[Tue Jul 15 16:40:04 2025] 192.168.0.233:37294 Accepted
+[Tue Jul 15 16:40:04 2025] 192.168.0.233:37294 [404]: GET / - No such file or directory
+[Tue Jul 15 16:40:04 2025] 192.168.0.233:37294 Closing
+[Tue Jul 15 16:40:04 2025] 192.168.0.233:37296 Accepted
+[Tue Jul 15 16:40:04 2025] 192.168.0.233:37296 [404]: GET /favicon.ico - No such file or directory
+[Tue Jul 15 16:40:04 2025] 192.168.0.233:37296 Closing
+[Tue Jul 15 16:40:22 2025] 127.0.0.1:54224 Closed without sending a request; it was probably just an unused speculative preconnection
+[Tue Jul 15 16:40:22 2025] 127.0.0.1:54224 Closing

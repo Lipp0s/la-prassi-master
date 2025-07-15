@@ -129,6 +129,7 @@ const BackBtn = styled.button`
 `;
 
 function Login() {
+  console.log('Render Login.js');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -137,6 +138,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('handleSubmit chiamato');
     if (!username || !password) {
       setMessage("Username and password are required!");
       return;
@@ -154,10 +156,14 @@ function Login() {
         body: JSON.stringify({ username, password }),
       });
       const data = await res.json();
+      console.log('Risposta login:', data); // LOG DI DEBUG
       if (data.success) {
         setMessage("Login successful! Redirecting...");
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("username", username);
+        if (data.session_token) {
+          localStorage.setItem("session_token", data.session_token);
+        }
         setTimeout(() => navigate("/"), 1200);
       } else {
         setMessage("Login failed: " + data.error);
@@ -211,6 +217,9 @@ function Login() {
                     setMessage('Login Google riuscito!');
                     localStorage.setItem('loggedIn', 'true');
                     localStorage.setItem('username', data.user.username);
+                    if (data.session_token) {
+                      localStorage.setItem("session_token", data.session_token);
+                    }
                     setTimeout(() => navigate('/'), 1200);
                   } else {
                     setMessage('Login Google fallito: ' + data.error);

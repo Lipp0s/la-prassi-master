@@ -16,9 +16,9 @@ try {
     ];
     
     $conn = new PDO($dsn, DB_USER, DB_PASS, $options);
-    
+
     // Create users table if it doesn't exist
-    $conn->exec("CREATE TABLE IF NOT EXISTS users (
+$conn->exec("CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         username VARCHAR(255) UNIQUE NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,

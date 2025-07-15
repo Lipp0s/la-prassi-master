@@ -1,10 +1,15 @@
 <?php
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
-header("Access-Control-Allow-Headers: Content-Type");
 include 'db.php';
 
 // Ricevi il token dal frontend
@@ -38,9 +43,23 @@ try {
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     
+    // Crea sessione
+    $session_token = bin2hex(random_bytes(32));
+    $expires_at = date('Y-m-d H:i:s', strtotime('+7 days'));
     if ($row) {
         // Utente già esistente: login
-        echo json_encode(["success" => true, "mode" => "login", "user" => $row]);
+        $stmt2 = $conn->prepare("INSERT INTO sessions (user_id, session_token, expires_at) VALUES (:user_id, :session_token, :expires_at)");
+        $stmt2->bindParam(":user_id", $row['id'], PDO::PARAM_INT);
+        $stmt2->bindParam(":session_token", $session_token, PDO::PARAM_STR);
+        $stmt2->bindParam(":expires_at", $expires_at, PDO::PARAM_STR);
+        $stmt2->execute();
+        echo json_encode([
+            "success" => true,
+            "mode" => "login",
+            "user" => $row,
+            "session_token" => $session_token,
+            "expires_at" => $expires_at
+        ]);
     } else {
         // Nuovo utente: registrazione
         $stmt2 = $conn->prepare("INSERT INTO users (username, email, password, is_verified) VALUES (:username, :email, :password, TRUE)");
@@ -48,10 +67,21 @@ try {
         $stmt2->bindParam(":email", $email, PDO::PARAM_STR);
         // Password random (non usata, ma richiesta dal DB)
         $stmt2->bindParam(":password", bin2hex(random_bytes(16)), PDO::PARAM_STR);
-        
         if ($stmt2->execute()) {
             $userId = $conn->lastInsertId();
-            echo json_encode(["success" => true, "mode" => "register", "user" => ["id" => $userId, "username" => $username, "email" => $email]]);
+            // Crea sessione per il nuovo utente
+            $stmt3 = $conn->prepare("INSERT INTO sessions (user_id, session_token, expires_at) VALUES (:user_id, :session_token, :expires_at)");
+            $stmt3->bindParam(":user_id", $userId, PDO::PARAM_INT);
+            $stmt3->bindParam(":session_token", $session_token, PDO::PARAM_STR);
+            $stmt3->bindParam(":expires_at", $expires_at, PDO::PARAM_STR);
+            $stmt3->execute();
+            echo json_encode([
+                "success" => true,
+                "mode" => "register",
+                "user" => ["id" => $userId, "username" => $username, "email" => $email],
+                "session_token" => $session_token,
+                "expires_at" => $expires_at
+            ]);
         } else {
             echo json_encode(["success" => false, "error" => "Registration failed"]);
         }
