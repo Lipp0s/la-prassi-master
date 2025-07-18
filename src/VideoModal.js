@@ -6,6 +6,8 @@ import videoSections from './videos';
 import ReactPlayer from 'react-player';
 import screenfull from 'screenfull';
 import ReviewForm from './ReviewForm';
+import { AiFillStar, AiOutlineStar, AiOutlineClockCircle } from 'react-icons/ai';
+import { FaArrowLeft, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 
 // Modern SVG Logo as a React component
 const ModernLogo = () => (
@@ -52,6 +54,30 @@ const Modal = styled.div`
   align-items: center;
   animation: modalPopIn 0.38s cubic-bezier(.4,2,.6,1);
   border: none;
+  max-width: 1500px;
+  width: 96vw;
+  height: 96vh;
+  overflow-y: auto;
+  margin: 2.5rem auto;
+  padding: 2.5rem 2rem 2.5rem 2rem;
+  @media (max-width: 900px) {
+    max-width: 100vw;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    padding: 1rem 0.2rem;
+  }
+  /* Scrollbar stile home */
+  &::-webkit-scrollbar {
+    width: 10px;
+    background: #232323;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #A35C7A;
+    border-radius: 8px;
+  }
+  scrollbar-width: thin;
+  scrollbar-color: #A35C7A #232323;
 `;
 
 const CloseBtn = styled.button`
@@ -97,27 +123,185 @@ const Title = styled.h2`
   text-shadow: 0 2px 12px #000a;
 `;
 
-const PlayerContainer = styled.div`
-  background: rgba(24,24,32,0.92);
-  border-radius: 3rem;
-  box-shadow: 0 8px 40px 0 #A35C7A33, 0 2px 12px #000a;
-  border: none;
-  padding: 0;
+const ReviewsGridWrapper = styled.div`
+  position: relative;
+  max-width: 700px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+  background: rgba(35,35,55,0.98);
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 16px #A35C7A22;
+  margin-top: 2.5rem;
+`;
+const ReviewsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  /* overflow-y e max-height rimossi */
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #A35C7A #232336;
+  @media (min-width: 768px) {
+    grid-template-columns: 1fr 1fr;
+  }
+  &::-webkit-scrollbar {
+    width: 8px;
+    background: #232336;
+    border-radius: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #A35C7A;
+    border-radius: 8px;
+  }
+`;
+const StickyReviewsHeader = styled.div`
+  position: sticky;
+  top: 0;
+  background: #232336ee;
+  z-index: 3;
+  padding: 0.7rem 0 0.5rem 0;
+  text-align: center;
+`;
+const SeeReviewsBtn = styled.button`
+  display: block;
+  margin: 1.1rem auto 0 auto;
+  background: none;
+  border: 2px solid #A35C7A;
+  color: #A35C7A;
+  font-weight: 700;
+  font-size: 1.08rem;
+  border-radius: 18px;
+  padding: 0.5rem 1.6rem;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border 0.18s;
+  box-shadow: 0 2px 8px #A35C7A22;
+  &:hover, &:focus {
+    background: #A35C7A;
+    color: #fff;
+    outline: none;
+    border-color: #7B3F61;
+  }
+`;
+const ScrollShadow = styled.div`
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 54px;
+  pointer-events: none;
+  background: linear-gradient(0deg, #232336ee 80%, transparent 100%);
+  z-index: 2;
+`;
+const ReviewCard = styled.div`
+  background: #232336;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px #A35C7A33;
+  border: 1.5px solid #7B3F61;
+  padding: 1.3rem 1.2rem 1.1rem 1.2rem;
   display: flex;
   flex-direction: column;
+  min-height: 140px;
+  position: relative;
+`;
+const ReviewHeader = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.7rem;
+`;
+const Avatar = styled.div`
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(120deg, #A35C7A 0%, #7B3F61 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.25rem;
+  display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  width: 88vw;
-  max-width: 900px;
-  aspect-ratio: 16/9;
+  margin-right: 0.9rem;
+  box-shadow: 0 2px 8px #A35C7A33;
+`;
+const Username = styled.div`
+  font-weight: 600;
+  color: #fff;
+  font-size: 1.08rem;
+  margin-right: 0.7rem;
+`;
+const Stars = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.05rem;
+  margin-left: auto;
+`;
+const ReviewComment = styled.div`
+  color: #b0b0b0;
+  font-style: italic;
+  font-size: 1.04rem;
+  margin-bottom: 0.7rem;
+  max-height: 6.2em;
   overflow: hidden;
-  animation: ${fadeIn} 0.4s cubic-bezier(.4,2,.6,1) both;
-  pointer-events: auto;
-  @media (max-width: 600px) {
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+`;
+const ReviewFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: auto;
+  font-size: 0.85rem;
+  color: #b0b0b0;
+  opacity: 0.7;
+`;
+const PlayerTitle = styled.h2`
+  color: #eaeaea;
+  font-size: 2rem;
+  font-weight: 900;
+  text-align: center;
+  margin: 0 0 1.2rem 0;
+  text-shadow: 0 2px 12px #000a;
+`;
+const BackBtn = styled.button`
+  background: none;
+  border: none;
+  color: #00bcd4;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 1.2rem;
+  margin-left: 0.2rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  transition: background 0.18s, color 0.18s;
+  &:hover, &:focus {
+    background: #232336;
+    color: #fff;
+    outline: none;
+  }
+`;
+const PlayerContainer = styled.div`
+  width: 100%;
+  max-width: 1400px;
+  max-height: 80vh;
+  aspect-ratio: 16/9;
+  margin: 1.5rem auto 2rem auto;
+  background: #000;
+  border-radius: 2.5rem;
+  box-shadow: 0 12px 64px #A35C7A99, 0 2px 16px #000a;
+  border: 4px solid #A35C7A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.3s, border 0.3s;
+  @media (max-width: 900px) {
     max-width: 100vw;
+    max-height: 40vh;
     border-radius: 0;
-    border: none;
+    border-left: none;
+    border-right: none;
   }
 `;
 
@@ -171,6 +355,12 @@ const Spinner = styled.div`
   }
 `;
 
+const ReviewFormWrapper = styled.div`
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto 1.5rem auto;
+`;
+
 function getPlayableUrl(video) {
   if (video.type === 'youtube') {
     return video.url.includes('?')
@@ -194,6 +384,65 @@ function VideoModal() {
   const [played, setPlayed] = useState(0);
   const [duration, setDuration] = useState(0);
   const playerRef = useRef();
+  const [reviews, setReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [reviewsError, setReviewsError] = useState("");
+  const reviewsGridRef = useRef();
+  const reviewsGridScrollRef = useRef();
+  const [highlightReviews, setHighlightReviews] = useState(false);
+
+  // Fetch reviews quando cambia il video.id
+  useEffect(() => {
+    if (!video?.id) return;
+    const fetchReviews = async () => {
+      setReviewsLoading(true);
+      setReviewsError("");
+      try {
+        const session_token = localStorage.getItem('session_token');
+        if (!session_token) {
+          setReviews([]);
+          setReviewsLoading(false);
+          setReviewsError("Devi essere loggato per vedere le recensioni.");
+          return;
+        }
+        const res = await fetch(`http://localhost:8000/get_reviews.php?video_id=${encodeURIComponent(video.id)}`, {
+          headers: { 'Authorization': 'Bearer ' + session_token }
+        });
+        const data = await res.json();
+        if (data.success) {
+          setReviews(data.reviews);
+        } else {
+          setReviewsError(data.error || "Errore nel caricamento delle recensioni");
+        }
+      } catch (err) {
+        setReviewsError("Errore di rete");
+      }
+      setReviewsLoading(false);
+    };
+    fetchReviews();
+  }, [video?.id]);
+
+  // Funzione per ricaricare le recensioni dopo l'invio di una nuova
+  const handleReviewAdded = () => {
+    if (!video?.id) return;
+    setReviewsLoading(true);
+    setReviewsError("");
+    const session_token = localStorage.getItem('session_token');
+    if (!session_token) return;
+    fetch(`http://localhost:8000/get_reviews.php?video_id=${encodeURIComponent(video.id)}`, {
+      headers: { 'Authorization': 'Bearer ' + session_token }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setReviews(data.reviews);
+        else setReviewsError(data.error || "Errore nel caricamento delle recensioni");
+        setReviewsLoading(false);
+      })
+      .catch(() => {
+        setReviewsError("Errore di rete");
+        setReviewsLoading(false);
+      });
+  };
 
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -253,15 +502,21 @@ function VideoModal() {
     }
   };
 
+  const handleSeeReviews = () => {
+    if (reviewsGridRef.current) {
+      reviewsGridRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <Overlay onMouseDown={handleOverlayMouseDown}>
-      <Modal ref={modalRef}>
-        <CloseBtn onClick={() => navigate('/')} aria-label="Close video">
-          <FaTimes />
-        </CloseBtn>
+      <Modal ref={modalRef} tabIndex={-1}>
+        <BackBtn onClick={() => navigate('/')} aria-label="Torna alla lista">
+          <FaArrowLeft /> Torna alla lista
+        </BackBtn>
         <TitleRow>
           <ModernLogo />
-          <Title>{video.title}</Title>
+          <PlayerTitle>{video.title}</PlayerTitle>
         </TitleRow>
         <PlayerContainer ref={playerRef}>
           {loading && !error && <Spinner />}
@@ -288,7 +543,7 @@ function VideoModal() {
                 onPause={() => setPlaying(false)}
                 onProgress={state => setPlayed(state.playedSeconds)}
                 onDuration={d => setDuration(d)}
-                style={{borderRadius:'3rem',background:'#000'}}
+                style={{borderRadius:'2.2rem',background:'#000'}}
               />
               <PlayerControls>
                 <ControlBtn onClick={()=>setPlaying(p=>!p)} aria-label={playing?'Pausa':'Play'}>{playing ? '❚❚' : '►'}</ControlBtn>
@@ -302,8 +557,53 @@ function VideoModal() {
           )}
         </PlayerContainer>
         {/* Form recensione sotto il player */}
-        <div style={{marginTop: '2rem', width: '100%'}}>
-          <ReviewForm video_id={Number(video.id)} />
+        <ReviewFormWrapper>
+          <ReviewForm video_id={video.id?.toString()} onReviewAdded={handleReviewAdded} />
+        </ReviewFormWrapper>
+        {/* Lista recensioni */}
+        <div
+          ref={reviewsGridRef}
+          style={{
+            marginTop: '1.2rem',
+            width: '100%',
+            maxWidth: 700,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}
+        >
+          <h3 style={{margin:'0 0 1.1rem 0', color:'#eaeaea', fontWeight:700, fontSize:'1.18rem', textAlign:'left'}}>Recensioni</h3>
+          {reviewsLoading ? (
+            <div style={{color:'#ffe066',fontWeight:700}}>Caricamento recensioni...</div>
+          ) : reviewsError ? (
+            <div style={{color:'#ff5252',fontWeight:700}}>{reviewsError}</div>
+          ) : reviews.length === 0 ? (
+            <div style={{color:'#aaa',textAlign:'center'}}>Nessuna recensione per questo video.</div>
+          ) : (
+            <div style={{display:'flex', flexDirection:'column', gap:0}}>
+              {reviews.map(r => (
+                <div key={r.id} style={{display:'flex', alignItems:'flex-start', padding:'0.9rem 0', borderBottom:'1px solid #333', fontSize:'1.05rem'}}>
+                  <div style={{width:36, height:36, borderRadius:'50%', background:'linear-gradient(120deg, #A35C7A 0%, #7B3F61 100%)', color:'#fff', fontWeight:700, fontSize:'1.15rem', display:'flex', alignItems:'center', justifyContent:'center', marginRight:13}}>
+                    {r.username ? r.username[0].toUpperCase() : '?'}
+                  </div>
+                  <div style={{flex:1}}>
+                    <div style={{display:'flex', alignItems:'center', gap:8, marginBottom:2}}>
+                      <span style={{fontWeight:600, color:'#fff', fontSize:'1.05rem'}}>{r.username || 'Utente'}</span>
+                      <span style={{display:'flex', alignItems:'center', gap:1}}>
+                        {[1,2,3,4,5].map(n => (
+                          n <= r.rating ? <AiFillStar key={n} color="#ffc107" style={{fontSize:'1.1rem'}} /> : <AiOutlineStar key={n} color="#444" style={{fontSize:'1.1rem'}} />
+                        ))}
+                      </span>
+                      <span style={{color:'#b0b0b0', fontSize:'0.93rem', marginLeft:10, display:'flex', alignItems:'center', gap:2}}>
+                        <AiOutlineClockCircle style={{marginRight:2}} />
+                        {r.created_at ? new Date(r.created_at).toLocaleString() : ''}
+                      </span>
+                    </div>
+                    <div style={{color:'#b0b0b0', fontStyle:'italic', fontSize:'1.01rem', marginTop:2}}>{r.comment || <span style={{color:'#555'}}>Nessun commento</span>}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </Modal>
     </Overlay>
