@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
 import videoSections from './videos';
 import ReactPlayer from 'react-player';
@@ -8,6 +8,7 @@ import screenfull from 'screenfull';
 import ReviewForm from './ReviewForm';
 import { AiFillStar, AiOutlineStar, AiOutlineClockCircle } from 'react-icons/ai';
 import { FaArrowLeft, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 
 // Modern SVG Logo as a React component
 const ModernLogo = () => (
@@ -285,7 +286,6 @@ const BackBtn = styled.button`
 const PlayerContainer = styled.div`
   width: 100%;
   max-width: 1400px;
-  max-height: 80vh;
   aspect-ratio: 16/9;
   margin: 1.5rem auto 2rem auto;
   background: #000;
@@ -295,13 +295,41 @@ const PlayerContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
   transition: box-shadow 0.3s, border 0.3s;
   @media (max-width: 900px) {
     max-width: 100vw;
-    max-height: 40vh;
     border-radius: 0;
     border-left: none;
     border-right: none;
+  }
+`;
+
+const FullscreenBtn = styled.button`
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: rgba(35,35,55,0.98);
+  border: 2px solid #A35C7A;
+  color: #fff;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #A35C7A33;
+  transition: background 0.18s, color 0.18s, border 0.18s, transform 0.18s;
+  opacity: 0.85;
+  z-index: 10;
+  &:hover, &:focus {
+    background: #A35C7A;
+    color: #fff;
+    border-color: #7B3F61;
+    outline: none;
+    transform: scale(1.12);
   }
 `;
 
@@ -362,19 +390,16 @@ const ReviewFormWrapper = styled.div`
 `;
 
 function getPlayableUrl(video) {
-  if (video.type === 'youtube') {
-    return video.url.includes('?')
-      ? video.url + '&autoplay=1&mute=1'
-      : video.url + '?autoplay=1&mute=1';
-  }
+  if (video.id) return `https://www.youtube.com/watch?v=${video.id}`;
   return video.url;
 }
 
 function VideoModal() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const modalRef = useRef();
-  const video = videoSections.flatMap(section => section.videos).find(v => v.id === id);
+  const video = location.state?.video;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [playing, setPlaying] = useState(true);
@@ -390,6 +415,8 @@ function VideoModal() {
   const reviewsGridRef = useRef();
   const reviewsGridScrollRef = useRef();
   const [highlightReviews, setHighlightReviews] = useState(false);
+  // Carica i preferiti dell'utente
+  const [favorites, setFavorites] = useState([]);
 
   // Fetch reviews quando cambia il video.id
   useEffect(() => {
@@ -402,7 +429,7 @@ function VideoModal() {
         if (!session_token) {
           setReviews([]);
           setReviewsLoading(false);
-          setReviewsError("Devi essere loggato per vedere le recensioni.");
+          setReviewsError("You must be logged in to see reviews.");
           return;
         }
         const res = await fetch(`http://localhost:8000/get_reviews.php?video_id=${encodeURIComponent(video.id)}`, {
@@ -412,10 +439,10 @@ function VideoModal() {
         if (data.success) {
           setReviews(data.reviews);
         } else {
-          setReviewsError(data.error || "Errore nel caricamento delle recensioni");
+          setReviewsError(data.error || "Error loading reviews");
         }
       } catch (err) {
-        setReviewsError("Errore di rete");
+        setReviewsError("Network error");
       }
       setReviewsLoading(false);
     };
@@ -435,12 +462,42 @@ function VideoModal() {
       .then(res => res.json())
       .then(data => {
         if (data.success) setReviews(data.reviews);
-        else setReviewsError(data.error || "Errore nel caricamento delle recensioni");
+        else setReviewsError(data.error || "Error loading reviews");
         setReviewsLoading(false);
       })
       .catch(() => {
-        setReviewsError("Errore di rete");
+        setReviewsError("Network error");
         setReviewsLoading(false);
+      });
+  };
+
+  // Carica i preferiti dell'utente
+  useEffect(() => {
+    const session_token = localStorage.getItem('session_token');
+    if (!session_token) return;
+    fetch('http://localhost:8000/get_favorites.php', {
+      headers: { 'Authorization': 'Bearer ' + session_token }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setFavorites(data.favorites || []);
+      });
+  }, [video?.id]);
+
+  // Toggle favorite
+  const toggleFavorite = (video_id) => {
+    const session_token = localStorage.getItem('session_token');
+    if (!session_token) return;
+    fetch('http://localhost:8000/toggle_favorite.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session_token },
+      body: JSON.stringify({ video_id })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setFavorites(favs => data.favorited ? [...favs, video_id] : favs.filter(f => f !== video_id));
+        }
       });
   };
 
@@ -471,7 +528,7 @@ function VideoModal() {
     return () => clearTimeout(timeout);
   }, [loading]);
 
-  if (!video) return null;
+  if (!video) return <div style={{color:'#fff',textAlign:'center',marginTop:'3rem'}}>Video not found.</div>;
 
   // Debug: logga l'id del video
   console.log('video.id:', video.id, typeof video.id);
@@ -512,48 +569,54 @@ function VideoModal() {
     <Overlay onMouseDown={handleOverlayMouseDown}>
       <Modal ref={modalRef} tabIndex={-1}>
         <BackBtn onClick={() => navigate('/')} aria-label="Torna alla lista">
-          <FaArrowLeft /> Torna alla lista
+          <FaArrowLeft /> Back to list
         </BackBtn>
         <TitleRow>
           <ModernLogo />
           <PlayerTitle>{video.title}</PlayerTitle>
         </TitleRow>
+        <span style={{marginLeft:12, cursor:'pointer'}} onClick={() => toggleFavorite(video.id)}>
+          {favorites.includes(video.id) ? (
+            <FaHeart style={{color:'#e1306c', fontSize:'1.6rem'}} title="Remove from favorites" />
+          ) : (
+            <FaRegHeart style={{color:'#fff', fontSize:'1.6rem'}} title="Add to favorites" />
+          )}
+        </span>
         <PlayerContainer ref={playerRef}>
+          <FullscreenBtn onClick={() => {
+            const el = playerRef.current;
+            if (el.requestFullscreen) el.requestFullscreen();
+            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+            else if (el.mozRequestFullScreen) el.mozRequestFullScreen();
+            else if (el.msRequestFullscreen) el.msRequestFullscreen();
+          }} title="Fullscreen">
+            ⛶
+          </FullscreenBtn>
           {loading && !error && <Spinner />}
           {error && video.type === 'youtube' && (
             <div style={{ color: '#e1306c', textAlign: 'center', padding: '2rem', fontWeight: 700 }}>
-              Impossibile caricare il video.<br />
-              Potrebbe non essere embeddabile o la connessione è lenta.<br />
-              <a href={getYoutubeWatchUrl(video.url)} target="_blank" rel="noopener noreferrer" style={{marginTop: '1.5rem', display: 'inline-block', padding: '0.7rem 1.5rem', borderRadius: '1.5rem', border: 'none', background: '#A35C7A', color: '#fff', fontWeight: 700, textDecoration: 'none'}}>Guarda su YouTube</a>
+              Unable to load the video.<br />
+              It may not be embeddable or the connection is slow.<br />
+              <a href={getYoutubeWatchUrl(video.url)} target="_blank" rel="noopener noreferrer" style={{marginTop: '1.5rem', display: 'inline-block', padding: '0.7rem 1.5rem', borderRadius: '1.5rem', border: 'none', background: '#A35C7A', color: '#fff', fontWeight: 700, textDecoration: 'none'}}>Watch on YouTube</a>
             </div>
           )}
           {!error && (
-            <>
-              <ReactPlayer
-                url={video.url}
-                playing={playing}
-                muted={muted}
-                volume={volume}
-                width="100%"
-                height="100%"
-                controls={false}
-                onReady={() => setLoading(false)}
-                onError={() => { setLoading(false); setError(true); }}
-                onPlay={() => setPlaying(true)}
-                onPause={() => setPlaying(false)}
-                onProgress={state => setPlayed(state.playedSeconds)}
-                onDuration={d => setDuration(d)}
-                style={{borderRadius:'2.2rem',background:'#000'}}
-              />
-              <PlayerControls>
-                <ControlBtn onClick={()=>setPlaying(p=>!p)} aria-label={playing?'Pausa':'Play'}>{playing ? '❚❚' : '►'}</ControlBtn>
-                <input type="range" min={0} max={duration} value={played} step={0.1} onChange={e=>playerRef.current.seekTo(parseFloat(e.target.value))} style={{flex:1,margin:'0 1rem'}} aria-label="Seek" />
-                <Time>{formatTime(played)} / {formatTime(duration)}</Time>
-                <ControlBtn onClick={()=>setMuted(m=>!m)} aria-label={muted?'Attiva audio':'Muta'}>{muted ? '🔇' : '🔊'}</ControlBtn>
-                <input type="range" min={0} max={1} step={0.01} value={volume} onChange={e=>setVolume(parseFloat(e.target.value))} style={{width:70,margin:'0 0.5rem'}} aria-label="Volume" />
-                <ControlBtn onClick={handleFullscreen} aria-label="Fullscreen">⛶</ControlBtn>
-              </PlayerControls>
-            </>
+            <ReactPlayer
+              url={getPlayableUrl(video)}
+              playing={playing}
+              muted={muted}
+              volume={volume}
+              width="100%"
+              height="100%"
+              controls={true}
+              onReady={() => setLoading(false)}
+              onError={() => { setLoading(false); setError(true); }}
+              onPlay={() => setPlaying(true)}
+              onPause={() => setPlaying(false)}
+              onProgress={state => setPlayed(state.playedSeconds)}
+              onDuration={d => setDuration(d)}
+              style={{borderRadius:'2.2rem',background:'#000'}}
+            />
           )}
         </PlayerContainer>
         {/* Form recensione sotto il player */}
@@ -571,13 +634,13 @@ function VideoModal() {
             marginRight: 'auto',
           }}
         >
-          <h3 style={{margin:'0 0 1.1rem 0', color:'#eaeaea', fontWeight:700, fontSize:'1.18rem', textAlign:'left'}}>Recensioni</h3>
+          <h3 style={{margin:'0 0 1.1rem 0', color:'#eaeaea', fontWeight:700, fontSize:'1.18rem', textAlign:'left'}}>Reviews</h3>
           {reviewsLoading ? (
-            <div style={{color:'#ffe066',fontWeight:700}}>Caricamento recensioni...</div>
+            <div style={{color:'#ffe066',fontWeight:700}}>Loading reviews...</div>
           ) : reviewsError ? (
-            <div style={{color:'#ff5252',fontWeight:700}}>{reviewsError}</div>
+            <div style={{color:'#ff5252',fontWeight:700}}>{reviewsError === "You must be logged in to see reviews." ? "You must be logged in to see reviews." : reviewsError.replace("Error loading reviews", "Error loading reviews").replace("Network error", "Network error")}</div>
           ) : reviews.length === 0 ? (
-            <div style={{color:'#aaa',textAlign:'center'}}>Nessuna recensione per questo video.</div>
+            <div style={{color:'#aaa',textAlign:'center'}}>No reviews for this video yet.</div>
           ) : (
             <div style={{display:'flex', flexDirection:'column', gap:0}}>
               {reviews.map(r => (
@@ -587,7 +650,7 @@ function VideoModal() {
                   </div>
                   <div style={{flex:1}}>
                     <div style={{display:'flex', alignItems:'center', gap:8, marginBottom:2}}>
-                      <span style={{fontWeight:600, color:'#fff', fontSize:'1.05rem'}}>{r.username || 'Utente'}</span>
+                      <span style={{fontWeight:600, color:'#fff', fontSize:'1.05rem'}}>{r.username || 'User'}</span>
                       <span style={{display:'flex', alignItems:'center', gap:1}}>
                         {[1,2,3,4,5].map(n => (
                           n <= r.rating ? <AiFillStar key={n} color="#ffc107" style={{fontSize:'1.1rem'}} /> : <AiOutlineStar key={n} color="#444" style={{fontSize:'1.1rem'}} />
@@ -598,7 +661,7 @@ function VideoModal() {
                         {r.created_at ? new Date(r.created_at).toLocaleString() : ''}
                       </span>
                     </div>
-                    <div style={{color:'#b0b0b0', fontStyle:'italic', fontSize:'1.01rem', marginTop:2}}>{r.comment || <span style={{color:'#555'}}>Nessun commento</span>}</div>
+                    <div style={{color:'#b0b0b0', fontStyle:'italic', fontSize:'1.01rem', marginTop:2}}>{r.comment || <span style={{color:'#555'}}>No comment</span>}</div>
                   </div>
                 </div>
               ))}

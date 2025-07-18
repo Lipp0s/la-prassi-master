@@ -124,7 +124,7 @@ const ReviewForm = ({ video_id, onReviewAdded }) => {
     setSuccess(false);
     const session_token = localStorage.getItem('session_token');
     if (!session_token) {
-      setMessage('Devi essere loggato per lasciare una recensione.');
+      setMessage('You must be logged in to leave a review.');
       setLoading(false);
       return;
     }
@@ -139,17 +139,17 @@ const ReviewForm = ({ video_id, onReviewAdded }) => {
       });
       const data = await res.json();
       if (data.success) {
-        setMessage('Recensione inviata!');
+        setMessage('Review submitted!');
         setSuccess(true);
         setComment('');
         setRating(5);
         if (onReviewAdded) onReviewAdded();
       } else {
-        setMessage(data.error || 'Errore');
+        setMessage(data.error || 'Error');
         setSuccess(false);
       }
     } catch (err) {
-      setMessage('Errore di rete');
+      setMessage('Network error');
       setSuccess(false);
     }
     setLoading(false);
@@ -158,7 +158,7 @@ const ReviewForm = ({ video_id, onReviewAdded }) => {
   return (
     <Card>
       <form onSubmit={handleSubmit}>
-        <Title>Lascia una recensione</Title>
+        <Title>Leave a review</Title>
         <StarRow>
           {[1,2,3,4,5].map(n => (
             <StarButton
@@ -168,23 +168,23 @@ const ReviewForm = ({ video_id, onReviewAdded }) => {
               onClick={() => setRating(n)}
               onMouseEnter={() => setHover(n)}
               onMouseLeave={() => setHover(0)}
-              aria-label={`Dai ${n} stelle`}
+              aria-label={`Give ${n} stars`}
               tabIndex={0}
             >
               {hover ? (n <= hover ? <AiFillStar /> : <AiOutlineStar />) : (n <= rating ? <AiFillStar /> : <AiOutlineStar />)}
             </StarButton>
           ))}
         </StarRow>
-        <SelectedText>Hai dato {rating} stelle</SelectedText>
+        <SelectedText>You gave {rating} stars</SelectedText>
         <StyledTextarea
-          placeholder="Scrivi un commento (opzionale)"
+          placeholder="Write a comment (optional)"
           value={comment}
           onChange={e => setComment(e.target.value)}
           disabled={loading}
           maxLength={600}
         />
         <ButtonRow>
-          <SendButton type="submit" disabled={loading}>{loading ? 'Invio in corso...' : 'Invia'}{loading && <Spinner />}</SendButton>
+          <SendButton type="submit" disabled={loading}>{loading ? 'Sending...' : 'Send'}{loading && <Spinner />}</SendButton>
         </ButtonRow>
         {message && <Message success={success}>{message}</Message>}
       </form>

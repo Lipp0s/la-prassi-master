@@ -495,3 +495,121 @@
 [18-Jul-2025 12:36:21 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
 [18-Jul-2025 12:36:21 UTC] PARAMS: {":video_id":"gp3"}
 [18-Jul-2025 12:36:22 UTC] REVIEWS: []
+[18-Jul-2025 12:37:30 UTC] GET video_id: gp3
+[18-Jul-2025 12:37:30 UTC] GET user_id: N/A
+[18-Jul-2025 12:37:30 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 12:37:30 UTC] PARAMS: {":video_id":"gp3"}
+[18-Jul-2025 12:37:30 UTC] REVIEWS: [{"id":12,"rating":4,"comment":"Sus","created_at":"2025-07-18 12:37:29.492531+00","video_id":"gp3","username":"Dedalo"}]
+[18-Jul-2025 12:40:20 UTC] GET video_id: gp3
+[18-Jul-2025 12:40:20 UTC] GET user_id: N/A
+[18-Jul-2025 12:40:20 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 12:40:20 UTC] PARAMS: {":video_id":"gp3"}
+[18-Jul-2025 12:40:20 UTC] REVIEWS: [{"id":12,"rating":4,"comment":"Sus","created_at":"2025-07-18 12:37:29.492531+00","video_id":"gp3","username":"Dedalo"}]
+[18-Jul-2025 12:40:21 UTC] GET video_id: gp3
+[18-Jul-2025 12:40:21 UTC] GET user_id: N/A
+[18-Jul-2025 12:40:21 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 12:40:21 UTC] PARAMS: {":video_id":"gp3"}
+[18-Jul-2025 12:40:21 UTC] REVIEWS: [{"id":12,"rating":4,"comment":"Sus","created_at":"2025-07-18 12:37:29.492531+00","video_id":"gp3","username":"Dedalo"}]
+[18-Jul-2025 13:51:02 UTC] GET video_id: hJnAHzo4-KI
+[18-Jul-2025 13:51:02 UTC] GET user_id: N/A
+[18-Jul-2025 13:51:02 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:51:02 UTC] PARAMS: {":video_id":"hJnAHzo4-KI"}
+[18-Jul-2025 13:51:03 UTC] REVIEWS: []
+[18-Jul-2025 13:51:04 UTC] GET video_id: hJnAHzo4-KI
+[18-Jul-2025 13:51:04 UTC] GET user_id: N/A
+[18-Jul-2025 13:51:04 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:51:04 UTC] PARAMS: {":video_id":"hJnAHzo4-KI"}
+[18-Jul-2025 13:51:04 UTC] REVIEWS: []
+[18-Jul-2025 13:51:19 UTC] GET video_id: 18QQWa5MEcs
+[18-Jul-2025 13:51:19 UTC] GET user_id: N/A
+[18-Jul-2025 13:51:19 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:51:19 UTC] PARAMS: {":video_id":"18QQWa5MEcs"}
+[18-Jul-2025 13:51:20 UTC] REVIEWS: []
+[18-Jul-2025 13:51:21 UTC] GET video_id: 18QQWa5MEcs
+[18-Jul-2025 13:51:21 UTC] GET user_id: N/A
+[18-Jul-2025 13:51:21 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:51:21 UTC] PARAMS: {":video_id":"18QQWa5MEcs"}
+[18-Jul-2025 13:51:21 UTC] REVIEWS: []
+[18-Jul-2025 13:52:23 UTC] GET video_id: vYCAgy-aQ-E
+[18-Jul-2025 13:52:23 UTC] GET user_id: N/A
+[18-Jul-2025 13:52:23 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:52:23 UTC] PARAMS: {":video_id":"vYCAgy-aQ-E"}
+[18-Jul-2025 13:52:23 UTC] REVIEWS: []
+[18-Jul-2025 13:52:25 UTC] GET video_id: vYCAgy-aQ-E
+[18-Jul-2025 13:52:25 UTC] GET user_id: N/A
+[18-Jul-2025 13:52:25 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:52:25 UTC] PARAMS: {":video_id":"vYCAgy-aQ-E"}
+[18-Jul-2025 13:52:25 UTC] REVIEWS: []
+[18-Jul-2025 13:52:44 UTC] GET video_id: vYCAgy-aQ-E
+[18-Jul-2025 13:52:44 UTC] GET user_id: N/A
+[18-Jul-2025 13:52:44 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:52:44 UTC] PARAMS: {":video_id":"vYCAgy-aQ-E"}
+[18-Jul-2025 13:52:44 UTC] REVIEWS: [{"id":13,"rating":5,"comment":"6","created_at":"2025-07-18 13:52:43.937555+00","video_id":"vYCAgy-aQ-E","username":"Dedalo"}]
+[18-Jul-2025 13:53:59 UTC] GET video_id: vYCAgy-aQ-E
+[18-Jul-2025 13:53:59 UTC] GET user_id: N/A
+[18-Jul-2025 13:53:59 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:53:59 UTC] PARAMS: {":video_id":"vYCAgy-aQ-E"}
+[18-Jul-2025 13:53:59 UTC] REVIEWS: [{"id":13,"rating":5,"comment":"6","created_at":"2025-07-18 13:52:43.937555+00","video_id":"vYCAgy-aQ-E","username":"Dedalo"}]
+[18-Jul-2025 13:54:01 UTC] GET video_id: vYCAgy-aQ-E
+[18-Jul-2025 13:54:01 UTC] GET user_id: N/A
+[18-Jul-2025 13:54:01 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:54:01 UTC] PARAMS: {":video_id":"vYCAgy-aQ-E"}
+[18-Jul-2025 13:54:01 UTC] REVIEWS: [{"id":13,"rating":5,"comment":"6","created_at":"2025-07-18 13:52:43.937555+00","video_id":"vYCAgy-aQ-E","username":"Dedalo"}]
+[18-Jul-2025 13:59:43 UTC] GET video_id: vYCAgy-aQ-E
+[18-Jul-2025 13:59:43 UTC] GET user_id: N/A
+[18-Jul-2025 13:59:43 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:59:43 UTC] PARAMS: {":video_id":"vYCAgy-aQ-E"}
+[18-Jul-2025 13:59:43 UTC] REVIEWS: [{"id":13,"rating":5,"comment":"6","created_at":"2025-07-18 13:52:43.937555+00","video_id":"vYCAgy-aQ-E","username":"Dedalo"}]
+[18-Jul-2025 13:59:45 UTC] GET video_id: vYCAgy-aQ-E
+[18-Jul-2025 13:59:45 UTC] GET user_id: N/A
+[18-Jul-2025 13:59:45 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 13:59:45 UTC] PARAMS: {":video_id":"vYCAgy-aQ-E"}
+[18-Jul-2025 13:59:45 UTC] REVIEWS: [{"id":13,"rating":5,"comment":"6","created_at":"2025-07-18 13:52:43.937555+00","video_id":"vYCAgy-aQ-E","username":"Dedalo"}]
+[18-Jul-2025 14:20:19 UTC] GET video_id: wr29IEk_vas
+[18-Jul-2025 14:20:19 UTC] GET user_id: N/A
+[18-Jul-2025 14:20:19 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 14:20:19 UTC] PARAMS: {":video_id":"wr29IEk_vas"}
+[18-Jul-2025 14:20:19 UTC] REVIEWS: []
+[18-Jul-2025 14:20:20 UTC] GET video_id: wr29IEk_vas
+[18-Jul-2025 14:20:20 UTC] GET user_id: N/A
+[18-Jul-2025 14:20:20 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 14:20:20 UTC] PARAMS: {":video_id":"wr29IEk_vas"}
+[18-Jul-2025 14:20:20 UTC] REVIEWS: []
+[18-Jul-2025 14:21:33 UTC] GET video_id: rZ_e-s6VvR4
+[18-Jul-2025 14:21:33 UTC] GET user_id: N/A
+[18-Jul-2025 14:21:33 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 14:21:33 UTC] PARAMS: {":video_id":"rZ_e-s6VvR4"}
+[18-Jul-2025 14:21:33 UTC] REVIEWS: []
+[18-Jul-2025 14:21:35 UTC] GET video_id: rZ_e-s6VvR4
+[18-Jul-2025 14:21:35 UTC] GET user_id: N/A
+[18-Jul-2025 14:21:35 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 14:21:35 UTC] PARAMS: {":video_id":"rZ_e-s6VvR4"}
+[18-Jul-2025 14:21:35 UTC] REVIEWS: []
+[18-Jul-2025 14:24:59 UTC] GET video_id: YShVEXb7-ic
+[18-Jul-2025 14:24:59 UTC] GET user_id: N/A
+[18-Jul-2025 14:24:59 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 14:24:59 UTC] PARAMS: {":video_id":"YShVEXb7-ic"}
+[18-Jul-2025 14:24:59 UTC] REVIEWS: []
+[18-Jul-2025 14:25:00 UTC] GET video_id: YShVEXb7-ic
+[18-Jul-2025 14:25:00 UTC] GET user_id: N/A
+[18-Jul-2025 14:25:00 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 14:25:00 UTC] PARAMS: {":video_id":"YShVEXb7-ic"}
+[18-Jul-2025 14:25:00 UTC] REVIEWS: []
+[18-Jul-2025 14:25:09 UTC] GET video_id: 03u4xyj0TH4
+[18-Jul-2025 14:25:09 UTC] GET user_id: N/A
+[18-Jul-2025 14:25:09 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 14:25:09 UTC] PARAMS: {":video_id":"03u4xyj0TH4"}
+[18-Jul-2025 14:25:09 UTC] REVIEWS: []
+[18-Jul-2025 14:25:10 UTC] GET video_id: 03u4xyj0TH4
+[18-Jul-2025 14:25:10 UTC] GET user_id: N/A
+[18-Jul-2025 14:25:10 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 14:25:10 UTC] PARAMS: {":video_id":"03u4xyj0TH4"}
+[18-Jul-2025 14:25:10 UTC] REVIEWS: []
+[18-Jul-2025 15:43:07 UTC] GET video_id: eRsGyueVLvQ
+[18-Jul-2025 15:43:07 UTC] GET user_id: N/A
+[18-Jul-2025 15:43:07 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 15:43:07 UTC] PARAMS: {":video_id":"eRsGyueVLvQ"}
+[18-Jul-2025 15:43:12 UTC] GET video_id: eRsGyueVLvQ
+[18-Jul-2025 15:43:12 UTC] GET user_id: N/A
+[18-Jul-2025 15:43:12 UTC] SQL: SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) WHERE r.video_id = :video_id ORDER BY r.created_at DESC
+[18-Jul-2025 15:43:12 UTC] PARAMS: {":video_id":"eRsGyueVLvQ"}
