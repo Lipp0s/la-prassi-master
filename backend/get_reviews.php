@@ -40,14 +40,15 @@ if (isset($_GET['video_id'])) {
     $where[] = 'r.video_id = :video_id';
     $params[':video_id'] = $_GET['video_id'];
 }
-if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
+if (isset($_GET['user_id'])) {
     $where[] = 'r.user_id = :user_id';
-    $params[':user_id'] = (int)$_GET['user_id'];
+    $params[':user_id'] = $_GET['user_id'];
 }
 $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
 
 try {
-    $sql = "SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) $whereSql ORDER BY r.created_at DESC";
+    $sql = "SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username 
+            FROM reviews r JOIN users u ON r.user_id = u.id $whereSql ORDER BY r.created_at DESC";
     // LOG: query SQL e parametri
     error_log('SQL: ' . $sql);
     error_log('PARAMS: ' . json_encode($params));

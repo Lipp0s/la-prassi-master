@@ -44,7 +44,7 @@ error_log('Ora server PHP: ' . date('Y-m-d H:i:s'));
 
 try {
     // Valida il token e recupera user_id
-    $sql = "SELECT user_id FROM sessions WHERE session_token = :token AND (expires_at IS NULL OR expires_at > NOW())";
+    $sql = "SELECT s.user_id FROM sessions s WHERE s.session_token = :token AND (s.expires_at IS NULL OR s.expires_at > NOW())";
     error_log('Query validazione: ' . $sql);
     $stmt = $conn->prepare($sql);
     $stmt->bindParam(":token", $token, PDO::PARAM_STR);
@@ -54,6 +54,7 @@ try {
         echo json_encode(["success" => false, "error" => "Invalid or expired session"]);
         exit;
     }
+    
     $user_id = $session['user_id'];
     // Inserisci la recensione
     $stmt2 = $conn->prepare("INSERT INTO reviews (user_id, video_id, rating, comment) VALUES (:user_id, :video_id, :rating, :comment)");
