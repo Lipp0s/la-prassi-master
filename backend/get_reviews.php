@@ -1,70 +1,70 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Access-Control-Allow-Methods: GET, OPTIONS");
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/php_errors.log');
-header("Content-Type: application/json");
-include 'db.php';
-// --- AUTENTICAZIONE SESSIONE ---
-$headers = getallheaders();
-$auth = isset($headers['Authorization']) ? $headers['Authorization'] : (isset($headers['authorization']) ? $headers['authorization'] : null);
-if (!$auth || !preg_match('/Bearer\s+(\S+)/i', $auth, $matches)) {
-    http_response_code(401);
-    echo json_encode(["success" => false, "error" => "Missing or invalid Authorization header"]);
-    exit();
-}
-$session_token = $matches[1];
-$stmt = $conn->prepare("SELECT user_id FROM sessions WHERE session_token = :token");
-$stmt->execute([':token' => $session_token]);
-$session = $stmt->fetch(PDO::FETCH_ASSOC);
-if (!$session) {
-    http_response_code(401);
-    echo json_encode(["success" => false, "error" => "Invalid session token"]);
-    exit();
+    exit(0);
 }
 
-$where = [];
-$params = [];
-// LOG: parametri GET ricevuti
-error_log('GET video_id: ' . (isset($_GET['video_id']) ? $_GET['video_id'] : 'N/A'));
-error_log('GET user_id: ' . (isset($_GET['user_id']) ? $_GET['user_id'] : 'N/A'));
-if (isset($_GET['video_id'])) {
-    $where[] = 'r.video_id = :video_id';
-    $params[':video_id'] = $_GET['video_id'];
-}
-if (isset($_GET['user_id']) && is_numeric($_GET['user_id'])) {
-    $where[] = 'r.user_id = :user_id';
-    $params[':user_id'] = (int)$_GET['user_id'];
-}
-$whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
+require_once 'db.php';
 
 try {
-    $sql = "SELECT r.id, r.rating, r.comment, r.created_at, r.video_id, u.username FROM reviews r JOIN users u ON r.user_id = CAST(u.id AS TEXT) $whereSql ORDER BY r.created_at DESC";
-    // LOG: query SQL e parametri
-    error_log('SQL: ' . $sql);
-    error_log('PARAMS: ' . json_encode($params));
-    $stmt = $conn->prepare($sql);
-    foreach ($params as $k => $v) {
-        if ($k === ':video_id') {
-            $stmt->bindValue($k, $v, PDO::PARAM_STR);
-        } else {
-            $stmt->bindValue($k, $v, PDO::PARAM_INT);
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $video_id = $_GET['video_id'] ?? null;
+        
+        if (!$video_id) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Video ID is required']);
+            exit;
         }
+        
+        // Get reviews for the specific video
+        $stmt = $conn->prepare("
+            SELECT r.id, r.video_id, r.user_id, r.rating, r.comment as review, r.title, r.created_at,
+                   u.username 
+            FROM reviews r 
+            JOIN users u ON r.user_id = u.id 
+            WHERE r.video_id = :video_id 
+            ORDER BY r.created_at DESC
+        ");
+        $stmt->bindParam(":video_id", $video_id, PDO::PARAM_STR);
+        $stmt->execute();
+        $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Format the reviews
+        $formatted_reviews = [];
+        foreach ($reviews as $review) {
+            $formatted_reviews[] = [
+                'id' => $review['id'],
+                'video_id' => $review['video_id'],
+                'user_id' => $review['user_id'],
+                'username' => $review['username'],
+                'rating' => (int)$review['rating'],
+                'review' => $review['review'],
+                'title' => $review['title'] ?? 'Recensione',
+                'created_at' => $review['created_at']
+            ];
+        }
+        
+        echo json_encode([
+            'success' => true,
+            'reviews' => $formatted_reviews,
+            'count' => count($formatted_reviews)
+        ]);
+        
+    } else {
+        http_response_code(405);
+        echo json_encode(['success' => false, 'error' => 'Method not allowed']);
     }
-    $stmt->execute();
-    $reviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // LOG: risultato query
-    error_log('REVIEWS: ' . json_encode($reviews));
-    echo json_encode(["success" => true, "reviews" => $reviews]);
+    
 } catch (PDOException $e) {
-    echo json_encode(["success" => false, "error" => "Database error: " . $e->getMessage()]);
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => 'Server error: ' . $e->getMessage()]);
 }
 ?> 

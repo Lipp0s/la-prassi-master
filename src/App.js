@@ -6,6 +6,8 @@ import Home from './Home';
 import Login from './Login';
 import Register from './Register';
 import VerifyEmail from './VerifyEmail';
+import Profile from './Profile';
+import VideoPage from './VideoPage';
 
 // Palette Color Hunt ufficiale
 const COLORS = {
@@ -47,6 +49,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/video/:id" element={<VideoPage />} />
           </Routes>
         </AppContainer>
       </Router>

@@ -56,11 +56,13 @@ try {
     }
     $user_id = $session['user_id'];
     // Inserisci la recensione
-    $stmt2 = $conn->prepare("INSERT INTO reviews (user_id, video_id, rating, comment) VALUES (:user_id, :video_id, :rating, :comment)");
+    $title = isset($data['title']) ? trim($data['title']) : 'Recensione';
+    $stmt2 = $conn->prepare("INSERT INTO reviews (user_id, video_id, rating, comment, title) VALUES (:user_id, :video_id, :rating, :comment, :title)");
     $stmt2->bindParam(":user_id", $user_id, PDO::PARAM_INT);
     $stmt2->bindParam(":video_id", $video_id, PDO::PARAM_STR);
     $stmt2->bindParam(":rating", $data['rating'], PDO::PARAM_INT);
     $stmt2->bindParam(":comment", $comment, PDO::PARAM_STR);
+    $stmt2->bindParam(":title", $title, PDO::PARAM_STR);
     $stmt2->execute();
     echo json_encode(["success" => true, "message" => "Review added!"]);
 } catch (PDOException $e) {

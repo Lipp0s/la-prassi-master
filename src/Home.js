@@ -1174,10 +1174,15 @@ function Home() {
         )}
         {loggedIn && (
           <div style={{textAlign: 'center', margin: '2rem 0'}}>
-            <button style={{padding: '0.8rem 2rem', fontSize: '1.1rem', borderRadius: 18, background: '#A35C7A', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 700, boxShadow: '0 2px 12px #A35C7A33'}}
+            <button style={{padding: '0.8rem 2rem', fontSize: '1.1rem', borderRadius: 18, background: '#A35C7A', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 700, boxShadow: '0 2px 12px #A35C7A33', marginRight: '1rem'}}
+              onClick={() => navigate('/profile')}
+            >
+              Il Mio Profilo
+            </button>
+            <button style={{padding: '0.8rem 2rem', fontSize: '1.1rem', borderRadius: 18, background: '#C63C51', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 700, boxShadow: '0 2px 12px #C63C5133'}}
               onClick={() => setShowModal(true)}
             >
-              Open User Feature
+              Info Utente
             </button>
           </div>
         )}

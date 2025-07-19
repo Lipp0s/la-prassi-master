@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FaTimes, FaHeart, FaRegHeart, FaShareAlt, FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { FaTimes, FaHeart, FaRegHeart, FaShareAlt, FaExternalLinkAlt } from 'react-icons/fa';
 
 // Palette Color Hunt ufficiale
 const COLORS = {
@@ -25,7 +25,7 @@ const ModalOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,8 +44,8 @@ const ModalContent = styled.div`
   align-items: center;
   animation: modalPopIn 0.38s cubic-bezier(.4,2,.6,1);
   border: none;
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 95vw;
+  max-height: 95vh;
   overflow: hidden;
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -87,113 +87,21 @@ const CloseButton = styled.button`
 const VideoContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 1.2rem;
-  margin-bottom: 2rem;
-  padding: 2rem;
-  background: rgba(24, 24, 32, 0.8);
-  border-radius: 3rem;
-  box-shadow: 0 8px 40px 0 ${COLORS.accent}33, 0 2px 12px #000a;
-  border: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
   position: relative;
-  width: 88vw;
+  width: 90vw;
   max-width: 1200px;
   aspect-ratio: 16/9;
   overflow: hidden;
-`;
-
-const VideoPlayer = styled.video`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   border-radius: 2rem;
   box-shadow: 0 8px 32px 0 ${COLORS.accent}33, 0 2px 12px #000a;
 `;
 
-const VideoControls = styled.div`
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-  padding: 2rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  border-radius: 0 0 2rem 2rem;
-
-  ${VideoContainer}:hover & {
-    opacity: 1;
-  }
-`;
-
-const ControlButton = styled.button`
-  background: ${COLORS.glass};
-  color: ${COLORS.text};
-  border: 1px solid ${COLORS.glassBorder};
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-
-  &:hover {
-    background: ${COLORS.accent};
-    transform: scale(1.1);
-    box-shadow: 0 4px 16px ${COLORS.accent}44;
-  }
-`;
-
-const ProgressBar = styled.div`
-  flex: 1;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: ${props => props.$progress}%;
-    background: ${COLORS.accent};
-    border-radius: 3px;
-    transition: width 0.1s ease;
-  }
-`;
-
-const LoadingSpinner = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 54px;
-  height: 54px;
-  border: 5px solid ${COLORS.accent}33;
-  border-top: 5px solid ${COLORS.accent};
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  z-index: 10;
-  pointer-events: none;
-  @keyframes spin {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
-  }
+const YouTubeIframe = styled.iframe`
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 2rem;
 `;
 
 const VideoInfo = styled.div`
@@ -224,6 +132,7 @@ const ActionButtons = styled.div`
   gap: 1rem;
   justify-content: center;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
 `;
 
 const ActionButton = styled.button`
@@ -238,6 +147,9 @@ const ActionButton = styled.button`
   transition: all 0.3s ease;
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
   &:hover {
     background: ${props => props.$primary ? `linear-gradient(120deg, ${COLORS.primary} 0%, ${COLORS.secondary} 100%)` : COLORS.glassHover};
@@ -254,7 +166,9 @@ const YouTubeLink = styled.a`
   border-radius: 1.5rem;
   font-weight: 700;
   transition: all 0.3s ease;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-top: 1rem;
 
   &:hover {
@@ -264,113 +178,50 @@ const YouTubeLink = styled.a`
   }
 `;
 
-const FavoriteButton = styled.button`
-  background: ${props => props.$favorited ? COLORS.accent : COLORS.glass};
-  color: ${props => props.$favorited ? COLORS.text : COLORS.textMuted};
-  border: 1px solid ${props => props.$favorited ? 'transparent' : COLORS.glassBorder};
+
+
+const LoadingSpinner = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 54px;
+  height: 54px;
+  border: 5px solid ${COLORS.accent}33;
+  border-top: 5px solid ${COLORS.accent};
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-
-  &:hover {
-    background: ${COLORS.accent};
-    color: ${COLORS.text};
-    transform: scale(1.1);
-    box-shadow: 0 4px 16px ${COLORS.accent}44;
-  }
-`;
-
-const ShareButton = styled.button`
-  background: ${COLORS.glass};
-  color: ${COLORS.textMuted};
-  border: 1px solid ${COLORS.glassBorder};
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-
-  &:hover {
-    background: ${COLORS.accent};
-    color: ${COLORS.text};
-    transform: scale(1.1);
-    box-shadow: 0 4px 16px ${COLORS.accent}44;
+  animation: spin 1s linear infinite;
+  z-index: 10;
+  pointer-events: none;
+  @keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
   }
 `;
 
 const VideoModal = ({ video, onClose, onToggleFavorite }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const videoRef = React.useRef(null);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleLoadedData = () => setIsLoading(false);
-    const handleTimeUpdate = () => {
-      setProgress((video.currentTime / video.duration) * 100);
-    };
-
-    video.addEventListener('loadeddata', handleLoadedData);
-    video.addEventListener('timeupdate', handleTimeUpdate);
-
-    return () => {
-      video.removeEventListener('loadeddata', handleLoadedData);
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-    };
-  }, []);
-
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
-  };
-
-  const handleProgressClick = (e) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const width = rect.width;
-    const percentage = clickX / width;
-    video.currentTime = percentage * video.duration;
-  };
+    // Check if video is in favorites
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    setIsFavorite(favorites.includes(video.id));
+    
+    // Simulate loading time for YouTube iframe
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, [video.id]);
 
   const handleShare = async () => {
+    const videoUrl = `https://www.youtube.com/watch?v=${video.id}`;
+    
     if (navigator.share) {
       try {
         await navigator.share({
           title: video.title,
           text: video.description,
-          url: video.url
+          url: videoUrl
         });
       } catch (error) {
         console.log('Error sharing:', error);
@@ -378,7 +229,7 @@ const VideoModal = ({ video, onClose, onToggleFavorite }) => {
     } else {
       // Fallback: copy to clipboard
       try {
-        await navigator.clipboard.writeText(video.url);
+        await navigator.clipboard.writeText(videoUrl);
         alert('Link copiato negli appunti!');
       } catch (error) {
         console.log('Error copying to clipboard:', error);
@@ -386,7 +237,14 @@ const VideoModal = ({ video, onClose, onToggleFavorite }) => {
     }
   };
 
-  const isFavorite = localStorage.getItem('favorites')?.includes(video.id);
+  const handleToggleFavorite = () => {
+    if (onToggleFavorite) {
+      onToggleFavorite();
+    }
+    setIsFavorite(!isFavorite);
+  };
+
+  const youtubeUrl = `https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0&modestbranding=1&showinfo=0`;
 
   return (
     <ModalOverlay onClick={onClose}>
@@ -397,28 +255,14 @@ const VideoModal = ({ video, onClose, onToggleFavorite }) => {
 
         <VideoContainer>
           {isLoading && <LoadingSpinner />}
-          <VideoPlayer
-            ref={videoRef}
-            src={video.url}
-            poster={video.thumbnail}
-            onLoadStart={() => setIsLoading(true)}
-            onCanPlay={() => setIsLoading(false)}
+          <YouTubeIframe
+            src={youtubeUrl}
+            title={video.title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            onLoad={() => setIsLoading(false)}
           />
-          
-          <VideoControls>
-            <ControlButton onClick={togglePlay}>
-              {isPlaying ? <FaPause /> : <FaPlay />}
-            </ControlButton>
-            
-            <ProgressBar 
-              $progress={progress} 
-              onClick={handleProgressClick}
-            />
-            
-            <ControlButton onClick={toggleMute}>
-              {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
-            </ControlButton>
-          </VideoControls>
         </VideoContainer>
 
         <VideoInfo>
@@ -426,28 +270,25 @@ const VideoModal = ({ video, onClose, onToggleFavorite }) => {
           <VideoDescription>{video.description}</VideoDescription>
           
           <ActionButtons>
-            <FavoriteButton
-              $favorited={isFavorite}
-              onClick={() => onToggleFavorite(video.id)}
-            >
-              {isFavorite ? <FaHeart /> : <FaRegHeart />}
-            </FavoriteButton>
+            <ActionButton $primary onClick={handleToggleFavorite}>
+              {isFavorite ? <FaHeart style={{ color: '#e1306c' }} /> : <FaRegHeart />}
+              {isFavorite ? 'Rimuovi dai Preferiti' : 'Aggiungi ai Preferiti'}
+            </ActionButton>
             
-            <ShareButton onClick={handleShare}>
+            <ActionButton onClick={handleShare}>
               <FaShareAlt />
-            </ShareButton>
-          </ActionButtons>
-
-          {video.youtubeUrl && (
+              Condividi
+            </ActionButton>
+            
             <YouTubeLink 
-              href={video.youtubeUrl} 
-              target="_blank" 
+              href={`https://www.youtube.com/watch?v=${video.id}`}
+              target="_blank"
               rel="noopener noreferrer"
-              style={{padding: '0.8rem 2rem', fontSize: '1.1rem', borderRadius: 18, background: COLORS.accent, color: COLORS.text, border: 'none', cursor: 'pointer', fontWeight: 700, boxShadow: `0 2px 12px ${COLORS.accent}33`}}
             >
+              <FaExternalLinkAlt />
               Guarda su YouTube
             </YouTubeLink>
-          )}
+          </ActionButtons>
         </VideoInfo>
       </ModalContent>
     </ModalOverlay>
