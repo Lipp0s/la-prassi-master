@@ -36,7 +36,7 @@ if (!isset($data['video_id']) || !$data['video_id']) {
 
 try {
     // Valida il token e recupera user_id
-    $stmt = $conn->prepare("SELECT s.user_id FROM sessions s WHERE s.session_token = :token AND (s.expires_at IS NULL OR s.expires_at > NOW())");
+    $stmt = $conn->prepare("SELECT user_id FROM sessions WHERE session_token = :token AND (expires_at IS NULL OR expires_at > NOW())");
     $stmt->bindParam(":token", $token, PDO::PARAM_STR);
     $stmt->execute();
     $session = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -44,7 +44,6 @@ try {
         echo json_encode(["success" => false, "error" => "Invalid or expired session"]);
         exit;
     }
-    
     $user_id = $session['user_id'];
     $video_id = $data['video_id'];
 

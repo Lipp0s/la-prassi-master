@@ -21,7 +21,7 @@ if (!$auth || !preg_match('/Bearer\s+(\S+)/i', $auth, $matches)) {
     exit();
 }
 $session_token = $matches[1];
-$stmt = $conn->prepare("SELECT s.user_id FROM sessions s WHERE s.session_token = :token AND (s.expires_at IS NULL OR s.expires_at > NOW())");
+$stmt = $conn->prepare("SELECT user_id FROM sessions WHERE session_token = :token AND (expires_at IS NULL OR expires_at > NOW())");
 $stmt->execute([':token' => $session_token]);
 $session = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$session) {
@@ -29,12 +29,10 @@ if (!$session) {
     echo json_encode(["success" => false, "error" => "Invalid session token"]);
     exit();
 }
-
 $user_id = $session['user_id'];
 
 $stmt2 = $conn->prepare("SELECT video_id FROM favorites WHERE user_id = :user_id");
 $stmt2->bindParam(":user_id", $user_id, PDO::PARAM_INT);
 $stmt2->execute();
 $favorites = $stmt2->fetchAll(PDO::FETCH_COLUMN);
-echo json_encode(["success" => true, "favorites" => $favorites]);
-?> 
+echo json_encode(["success" => true, "favorites" => $favorites]); 

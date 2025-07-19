@@ -612,7 +612,7 @@ function Home() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState("");
-
+  const [showModal, setShowModal] = useState(false);
   const [showScroll, setShowScroll] = useState(false);
   const [loading, setLoading] = useState(false);
   const [categoryVideos, setCategoryVideos] = useState({});
@@ -1005,28 +1005,31 @@ function Home() {
         )}
         {loggedIn && (
           <div style={{textAlign: 'center', margin: '2rem 0'}}>
-            <NavBtn 
-              to="/profile" 
-              style={{
-                padding: '0.8rem 2rem', 
-                fontSize: '1.1rem', 
-                borderRadius: 18, 
-                background: '#A35C7A', 
-                color: '#fff', 
-                border: 'none', 
-                cursor: 'pointer', 
-                fontWeight: 700, 
-                boxShadow: '0 2px 12px #A35C7A33',
-                textDecoration: 'none',
-                display: 'inline-block'
-              }}
+            <button style={{padding: '0.8rem 2rem', fontSize: '1.1rem', borderRadius: 18, background: '#A35C7A', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 700, boxShadow: '0 2px 12px #A35C7A33'}}
+              onClick={() => setShowModal(true)}
             >
-              My Profile
-            </NavBtn>
+              Open User Feature
+            </button>
           </div>
         )}
       </AppFade>
-
+      {showModal && (
+        <div style={{position: 'fixed', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000}}>
+          <div style={{background:'#232336', color:'#fff', padding:'2rem 2.5rem', borderRadius:18, boxShadow:'0 2px 12px #0008', minWidth:320, textAlign:'center', position:'relative'}}>
+            <h2 style={{marginBottom:'1rem'}}>User Profile</h2>
+            <div style={{marginBottom:'1.2rem'}}>
+              <strong>Username:</strong> {user}
+            </div>
+            <div style={{marginBottom:'1.2rem'}}>
+              <strong>Email:</strong> (hidden for now)
+            </div>
+            <div style={{marginBottom:'1.2rem', color:'#aaa'}}>
+              More profile features coming soon!
+            </div>
+            <button onClick={() => setShowModal(false)} style={{marginTop:'1rem', padding:'0.5rem 1.5rem', borderRadius:12, background:'#A35C7A', color:'#fff', border:'none', fontWeight:700, cursor:'pointer'}}>Close</button>
+          </div>
+        </div>
+      )}
       {/* 1. Scroll to Top Button */}
       {showScroll && (
         <ScrollTopBtn onClick={scrollToTop} title="Back to top">↑</ScrollTopBtn>

@@ -6,7 +6,6 @@ import VideoModal from './VideoModal';
 import Login from './Login';
 import Register from './Register';
 import VerifyEmail from './VerifyEmail';
-import Profile from './Profile';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const GlobalStyle = createGlobalStyle`
@@ -59,7 +58,6 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/profile" element={<Profile />} />
           </Routes>
         </AppContainer>
       </Router>
