@@ -6,14 +6,31 @@ import { FaHeart, FaRegHeart, FaShareAlt, FaSearch } from 'react-icons/fa';
 
 const logo = process.env.PUBLIC_URL + '/logo192.png';
 
-const MAIN_GRADIENT = 'linear-gradient(90deg, #A35C7A 0%, #7B3F61 100%)';
+// Palette Color Hunt ufficiale
+const COLORS = {
+  primary: '#522258',      // Viola scuro
+  secondary: '#8C3061',    // Viola medio  
+  accent: '#C63C51',       // Corallo
+  highlight: '#D95F59',    // Corallo chiaro
+  text: '#FFFFFF',         // Bianco
+  textMuted: '#B0B0B0',    // Grigio chiaro
+  glass: 'rgba(255, 255, 255, 0.05)',
+  glassBorder: 'rgba(255, 255, 255, 0.1)',
+  glassHover: 'rgba(255, 255, 255, 0.08)',
+  glassShadow: 'rgba(0, 0, 0, 0.3)',
+  shadowHover: 'rgba(217, 95, 89, 0.3)',
+  white: '#FFFFFF',
+  black: '#000000'
+};
+
+const MAIN_GRADIENT = `linear-gradient(90deg, ${COLORS.secondary} 0%, ${COLORS.primary} 100%)`;
 
 const ModernLogo = () => (
   <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="mainGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#A35C7A" />
-        <stop offset="1" stopColor="#7B3F61" />
+        <stop stopColor={COLORS.secondary} />
+        <stop offset="1" stopColor={COLORS.primary} />
       </linearGradient>
     </defs>
     <circle cx="20" cy="20" r="18" fill="url(#mainGradient)" stroke="#fff" strokeWidth="2" />
@@ -24,7 +41,7 @@ const ModernLogo = () => (
 const AnimatedSection = styled.div`
   background: rgba(24,24,32,0.92);
   border-radius: 3rem;
-  box-shadow: 0 8px 32px #A35C7A22, 0 2px 12px #000a;
+  box-shadow: 0 8px 32px ${COLORS.accent}22, 0 2px 12px #000a;
   margin: 0 auto 2.5rem auto;
   padding: 2.5rem 1.2rem 2.5rem 1.2rem;
   max-width: 1200px;
@@ -42,7 +59,7 @@ const GlassCard = styled.div`
   overflow: hidden;
   box-shadow: none;
   text-decoration: none;
-  color: #fff;
+  color: ${COLORS.text};
   display: flex;
   flex-direction: column;
   cursor: pointer;
@@ -96,9 +113,9 @@ const GlassCardLink = styled(Link)`
   background: rgba(35,35,55,0.82);
   border-radius: 2.5rem;
   overflow: hidden;
-  box-shadow: 0 4px 32px #A35C7A33, 0 2px 12px #000a;
+  box-shadow: 0 4px 32px ${COLORS.accent}33, 0 2px 12px #000a;
   text-decoration: none;
-  color: #fff;
+  color: ${COLORS.text};
   display: flex;
   flex-direction: column;
   min-width: 260px;
@@ -113,13 +130,13 @@ const GlassCardLink = styled(Link)`
   animation: fadeInCard 0.9s cubic-bezier(.4,2,.6,1);
   &:hover {
     transform: scale(1.04) translateY(-4px) rotate(-0.5deg);
-    box-shadow: 0 16px 48px 0 #A35C7A99, 0 8px 32px #000a;
-    border: 2.5px solid #A35C7A;
+    box-shadow: 0 16px 48px 0 ${COLORS.accent}99, 0 8px 32px #000a;
+    border: 2.5px solid ${COLORS.accent};
     z-index: 3;
   }
   &.favorite {
-    border: 2.5px solid #e1306c;
-    box-shadow: 0 0 0 2px #e1306c55, 0 4px 32px #A35C7A33;
+    border: 2.5px solid ${COLORS.highlight};
+    box-shadow: 0 0 0 2px ${COLORS.highlight}55, 0 4px 32px ${COLORS.accent}33;
   }
 `;
 
@@ -146,7 +163,7 @@ const Thumb = styled.img`
   will-change: transform, filter;
   ${GlassCardLink}:hover & {
     transform: scale(1.06) rotate(-0.5deg);
-    box-shadow: 0 8px 32px #e1306c33, 0 2px 12px #000a;
+    box-shadow: 0 8px 32px ${COLORS.highlight}33, 0 2px 12px #000a;
     filter: brightness(1.08) grayscale(0);
   }
 `;
@@ -157,7 +174,7 @@ const CardInfo = styled.div`
   left: 0;
   width: 100%;
   background: rgba(24,24,32,0.82);
-  color: #fff;
+  color: ${COLORS.text};
   font-size: 0.98rem;
   padding: 0.7rem 1rem 0.7rem 1rem;
   opacity: 1;
@@ -176,7 +193,7 @@ const CardTitle = styled.div`
 `;
 const CardChannel = styled.div`
   font-size: 0.93rem;
-  color: #aaa;
+  color: ${COLORS.textMuted};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -209,7 +226,7 @@ const FeaturedSection = styled.section`
   background: #111;
   margin: 0 auto;
   border-radius: 1.5rem;
-  box-shadow: 0 8px 32px #A35C7A22, 0 2px 12px #000a;
+  box-shadow: 0 8px 32px ${COLORS.accent}22, 0 2px 12px #000a;
   margin-top: 3rem;
   @media (max-width: 600px) {
     height: 60vw;
@@ -230,7 +247,7 @@ const FeaturedOverlay = styled.div`
   position: relative;
   z-index: 2;
   padding: 2.5rem 2rem 3.5rem 2rem;
-  color: #fff;
+  color: ${COLORS.text};
   width: 100%;
   background: linear-gradient(180deg,rgba(0,0,0,0.0) 40%,rgba(0,0,0,0.7) 100%);
   display: flex;
@@ -238,7 +255,7 @@ const FeaturedOverlay = styled.div`
   align-items: flex-start;
   justify-content: flex-end;
   border-radius: 0 0 2.5rem 2.5rem;
-  box-shadow: 0 8px 32px #A35C7A33, 0 2px 12px #000a;
+  box-shadow: 0 8px 32px ${COLORS.accent}33, 0 2px 12px #000a;
 `;
 
 const FeaturedTitle = styled.h2`
@@ -250,22 +267,22 @@ const FeaturedTitle = styled.h2`
 
 const WatchButton = styled.button`
   background: ${MAIN_GRADIENT};
-  color: #fff;
+  color: ${COLORS.text};
   font-size: 1.2rem;
   font-weight: bold;
   border: none;
   border-radius: 32px;
   padding: 0.7rem 2.2rem;
   margin-top: 0.5rem;
-  box-shadow: 0 2px 12px #A35C7A55;
+  box-shadow: 0 2px 12px ${COLORS.accent}55;
   cursor: pointer;
   transition: background 0.32s, transform 0.32s, box-shadow 0.32s;
   outline: none;
   letter-spacing: 0.04em;
   &:hover {
-    background: linear-gradient(90deg, #7B3F61 0%, #A35C7A 100%);
+    background: linear-gradient(90deg, ${COLORS.primary} 0%, ${COLORS.secondary} 100%);
     transform: scale(1.06);
-    box-shadow: 0 4px 24px #A35C7A99;
+    box-shadow: 0 4px 24px ${COLORS.accent}99;
   }
 `;
 
@@ -275,6 +292,10 @@ const AppFade = styled.div`
     from { opacity: 0; }
     to { opacity: 1; }
   }
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const SectionWrapper = styled.div`
@@ -285,6 +306,12 @@ const SectionWrapper = styled.div`
     from { opacity: 0; transform: translateY(32px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2rem;
+  box-sizing: border-box;
 `;
 
 const SectionBg = styled.div`
@@ -295,10 +322,11 @@ const SectionBg = styled.div`
   margin: 0 auto;
   width: 100%;
   max-width: 1200px;
+  box-sizing: border-box;
 `;
 
 const SectionTitle = styled.h2`
-  color: #fff;
+  color: ${COLORS.text};
   font-size: 1.5rem;
   font-weight: 900;
   margin: 0 0 1.2rem 1.5rem;
@@ -330,6 +358,8 @@ const Row = styled.div`
   padding: 0 0 1.5rem 0;
   scroll-snap-type: x mandatory;
   min-height: 220px;
+  width: 100%;
+  box-sizing: border-box;
   @media (max-width: 900px) {
     gap: 1rem;
     padding: 0 0 1.2rem 0;
@@ -347,7 +377,7 @@ const Row = styled.div`
     background: #232323;
   }
   &::-webkit-scrollbar-thumb {
-    background: #e1306c;
+    background: ${COLORS.highlight};
     border-radius: 8px;
   }
 `;
@@ -367,12 +397,12 @@ const MainTitle = styled.h1`
   margin: 0;
   margin-top: 2.2rem;
   margin-bottom: 7rem;
-  background: linear-gradient(90deg, #A35C7A 0%, #e1306c 50%, #7B3F61 100%);
+  background: linear-gradient(90deg, ${COLORS.secondary} 0%, ${COLORS.highlight} 50%, ${COLORS.primary} 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
-  text-shadow: 0 8px 48px #A35C7A33, 0 2px 12px #000a, 0 0px 32px #e1306c44;
+  text-shadow: 0 8px 48px ${COLORS.secondary}33, 0 2px 12px #000a, 0 0px 32px ${COLORS.highlight}44;
   animation: titlePop 1.2s cubic-bezier(.4,2,.6,1);
   @keyframes titlePop {
     from { opacity: 0; transform: scale(0.92) translateY(-32px); }
@@ -426,12 +456,12 @@ const LogoText = styled.span`
   font-size: 1.45rem;
   font-weight: 900;
   letter-spacing: 0.08em;
-  background: linear-gradient(90deg, #A35C7A 0%, #7B3F61 100%);
+  background: linear-gradient(90deg, ${COLORS.secondary} 0%, ${COLORS.primary} 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
-  text-shadow: 0 2px 12px #A35C7A33, 0 1px 6px #000a;
+  text-shadow: 0 2px 12px ${COLORS.secondary}33, 0 1px 6px #000a;
 `;
 
 const NavActions = styled.div`
@@ -441,21 +471,21 @@ const NavActions = styled.div`
 `;
 
 const NavBtn = styled(Link)`
-  background: linear-gradient(90deg, #A35C7A 0%, #7B3F61 100%);
-  color: #fff;
+  background: linear-gradient(90deg, ${COLORS.secondary} 0%, ${COLORS.primary} 100%);
+  color: ${COLORS.text};
   font-size: 1.05rem;
   font-weight: 700;
   border: none;
   border-radius: 22px;
   padding: 0.5rem 1.4rem;
-  box-shadow: 0 2px 8px #A35C7A33;
+  box-shadow: 0 2px 8px ${COLORS.secondary}33;
   text-decoration: none;
   transition: background 0.22s, transform 0.22s, box-shadow 0.22s;
   outline: none;
   &:hover {
-    background: linear-gradient(90deg, #7B3F61 0%, #A35C7A 100%);
+    background: linear-gradient(90deg, ${COLORS.primary} 0%, ${COLORS.secondary} 100%);
     transform: scale(1.07);
-    box-shadow: 0 4px 16px #A35C7A55;
+    box-shadow: 0 4px 16px ${COLORS.secondary}55;
   }
 `;
 
@@ -465,12 +495,12 @@ const BackBtn = styled.button`
   left: 1.2rem;
   background: rgba(30,30,40,0.7);
   border: none;
-  color: #fff;
+  color: ${COLORS.text};
   font-size: 1.1rem;
   font-weight: 700;
   border-radius: 18px;
   padding: 0.5rem 1.3rem 0.5rem 2.2rem;
-  box-shadow: 0 2px 12px #A35C7A33, 0 2px 8px #000a;
+  box-shadow: 0 2px 12px ${COLORS.secondary}33, 0 2px 8px #000a;
   cursor: pointer;
   z-index: 3;
   transition: background 0.22s, box-shadow 0.22s, color 0.22s, transform 0.22s;
@@ -478,9 +508,9 @@ const BackBtn = styled.button`
   align-items: center;
   gap: 0.7rem;
   &:hover, &:focus {
-    background: linear-gradient(120deg, #A35C7A 0%, #7B3F61 100%);
-    color: #fff;
-    box-shadow: 0 4px 24px #A35C7A55, 0 2px 12px #000a;
+    background: linear-gradient(120deg, ${COLORS.secondary} 0%, ${COLORS.primary} 100%);
+    color: ${COLORS.text};
+    box-shadow: 0 4px 24px ${COLORS.secondary}55, 0 2px 12px #000a;
     outline: none;
     transform: scale(1.08);
   }
@@ -490,7 +520,7 @@ const BackLogo = styled.img`
   width: 22px;
   height: 22px;
   margin-right: 0.5rem;
-  filter: drop-shadow(0 2px 8px #A35C7A88);
+  filter: drop-shadow(0 2px 8px ${COLORS.secondary}88);
 `;
 
 // 1. Scroll to Top Button
@@ -499,13 +529,13 @@ const ScrollTopBtn = styled.button`
   right: 2.2rem;
   bottom: 2.2rem;
   z-index: 100;
-  background: linear-gradient(120deg, #A35C7A 0%, #7B3F61 100%);
-  color: #fff;
+  background: linear-gradient(120deg, ${COLORS.secondary} 0%, ${COLORS.primary} 100%);
+  color: ${COLORS.text};
   border: none;
   border-radius: 50%;
   width: 48px;
   height: 48px;
-  box-shadow: 0 2px 12px #A35C7A33, 0 2px 8px #000a;
+  box-shadow: 0 2px 12px ${COLORS.secondary}33, 0 2px 8px #000a;
   font-size: 2rem;
   display: flex;
   align-items: center;
@@ -514,7 +544,7 @@ const ScrollTopBtn = styled.button`
   cursor: pointer;
   transition: background 0.2s, transform 0.2s, opacity 0.2s;
   &:hover {
-    background: linear-gradient(120deg, #7B3F61 0%, #A35C7A 100%);
+    background: linear-gradient(120deg, ${COLORS.primary} 0%, ${COLORS.secondary} 100%);
     transform: scale(1.12);
     opacity: 1;
   }
@@ -524,8 +554,8 @@ const ScrollTopBtn = styled.button`
 const Spinner = styled.div`
   width: 72px;
   height: 72px;
-  border: 7px solid #A35C7A33;
-  border-top: 7px solid #A35C7A;
+  border: 7px solid ${COLORS.secondary}33;
+  border-top: 7px solid ${COLORS.secondary};
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 3rem auto 1rem auto;
@@ -543,10 +573,10 @@ const Toast = styled.div`
   left: 50%;
   transform: translateX(-50%);
   background: #232336;
-  color: #fff;
+  color: ${COLORS.text};
   padding: 1rem 2rem;
   border-radius: 2rem;
-  box-shadow: 0 2px 12px #A35C7A33, 0 2px 8px #000a;
+  box-shadow: 0 2px 12px ${COLORS.secondary}33, 0 2px 8px #000a;
   font-size: 1.1rem;
   opacity: 0.97;
   z-index: 9999;
@@ -570,7 +600,7 @@ const SearchBar = styled.div`
 const SearchInput = styled.input`
   background: transparent;
   border: none;
-  color: #fff;
+  color: ${COLORS.text};
   font-size: 1.1rem;
   outline: none;
   flex: 1;
@@ -590,6 +620,150 @@ const CATEGORIES = [
   { key: 'gameplay', label: 'Gameplay' },
   { key: 'tutorial', label: 'Tutorial' },
 ];
+
+const AppContainer = styled.div`
+  min-height: 100vh !important;
+  background: #000000 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100vh !important;
+  overflow-x: hidden !important;
+  position: relative !important;
+  color: ${COLORS.text};
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+`;
+
+// Header con glass effect originale
+const Header = styled.header`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: ${COLORS.glass};
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid ${COLORS.glassBorder};
+  padding: 1rem 0;
+`;
+
+const HeaderContent = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+// Hero Section originale - RIMOSSA
+// const HeroSection = styled.section`
+//   padding: 8rem 0 4rem 0;
+//   text-align: center;
+//   position: relative;
+//   z-index: 1;
+// `;
+
+// const HeroTitle = styled.h1`
+//   font-size: 4.5rem;
+//   font-weight: 900;
+//   color: ${COLORS.white};
+//   margin-bottom: 1.5rem;
+//   line-height: 1.1;
+//   text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+// `;
+
+// const HeroSubtitle = styled.p`
+//   font-size: 1.25rem;
+//   color: rgba(255,255,255,0.9);
+//   margin-bottom: 2rem;
+//   width: 100%;
+//   font-weight: 400;
+// `;
+
+// FeaturedSection - RIMOSSA
+// const FeaturedSection = styled.section`
+//   position: relative;
+//   width: 100%;
+//   max-width: 100%;
+//   height: 56vw;
+//   max-height: 60vh;
+//   min-height: 320px;
+//   overflow: hidden;
+//   display: flex;
+//   align-items: flex-end;
+//   background: #111;
+//   margin: 0 auto;
+//   border-radius: 1.5rem;
+//   box-shadow: 0 8px 32px ${COLORS.accent}22, 0 2px 12px #000a;
+//   margin-top: 3rem;
+//   @media (max-width: 600px) {
+//     height: 60vw;
+//     min-height: 180px;
+//     border-radius: 0.7rem;
+//     margin-top: 2rem;
+//   }
+// `;
+
+// const FeaturedVideo = styled.video`
+//   position: absolute;
+//   top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+//   z-index: 1;
+//   filter: brightness(0.7) blur(0.5px);
+// `;
+
+// const FeaturedOverlay = styled.div`
+//   position: relative;
+//   z-index: 2;
+//   padding: 2.5rem 2rem 3.5rem 2rem;
+//   color: ${COLORS.text};
+//   width: 100%;
+//   background: linear-gradient(180deg,rgba(0,0,0,0.0) 40%,rgba(0,0,0,0.7) 100%);
+//   display: flex;
+//   flex-direction: column;
+//   align-items: flex-start;
+//   justify-content: flex-end;
+//   border-radius: 0 0 2.5rem 2.5rem;
+//   box-shadow: 0 8px 32px ${COLORS.accent}33, 0 2px 12px #000a;
+// `;
+
+// const FeaturedTitle = styled.h2`
+//   font-size: 2.5rem;
+//   font-weight: 900;
+//   margin: 0 0 1rem 0;
+//   text-shadow: 0 4px 24px #000a;
+// `;
+
+// const WatchButton = styled.button`
+//   background: ${MAIN_GRADIENT};
+//   color: ${COLORS.text};
+//   font-size: 1.2rem;
+//   font-weight: bold;
+//   border: none;
+//   border-radius: 32px;
+//   padding: 0.7rem 2.2rem;
+//   margin-top: 0.5rem;
+//   box-shadow: 0 2px 12px ${COLORS.accent}55;
+//   cursor: pointer;
+//   transition: background 0.32s, transform 0.32s, box-shadow 0.32s;
+//   outline: none;
+//   letter-spacing: 0.04em;
+//   &:hover {
+//     background: linear-gradient(90deg, ${COLORS.primary} 0%, ${COLORS.secondary} 100%);
+//     transform: scale(1.06);
+//     box-shadow: 0 4px 24px ${COLORS.accent}99;
+//   }
+// `;
+
+// Video Grid con glass effect originale
+const VideoSection = styled.section`
+  margin-bottom: 5rem;
+  padding: 0;
+  position: relative;
+  z-index: 1;
+  background: #000000;
+`;
 
 function Home() {
   // Funzioni di cache locale per i video per categoria
@@ -776,8 +950,8 @@ function Home() {
     });
   }, []);
 
-  // Featured video
-  const featured = (categoryVideos[CATEGORIES[0].key] && categoryVideos[CATEGORIES[0].key][0]) || null;
+  // Featured video - RIMOSSO
+  // const featured = (categoryVideos[CATEGORIES[0].key] && categoryVideos[CATEGORIES[0].key][0]) || null;
 
   // Carica i preferiti dell'utente
   useEffect(() => {
@@ -832,13 +1006,6 @@ function Home() {
   const allLoadedVideos = Object.values(categoryVideos).flat();
   const recentVideos = recent.map(id => allLoadedVideos.find(v => v && v.id === id)).filter(Boolean);
 
-  // Share button
-  const shareVideo = (id) => {
-    const url = window.location.origin + '/video/' + id;
-    navigator.clipboard.writeText(url);
-    // Optionally show a toast or feedback
-  };
-
   return (
     <>
       {/* Navbar without theme toggle */}
@@ -872,7 +1039,9 @@ function Home() {
           </BackBtn>
         )}
         <MainTitle>BOIOLAX</MainTitle>
-        {featured && (
+        
+        {/* Hero Section RIMOSSA - solo questa parte è stata rimossa */}
+        {/* {featured && (
           <FeaturedSection>
             <FeaturedVideo
               as="iframe"
@@ -891,7 +1060,7 @@ function Home() {
               </WatchButton>
             </FeaturedOverlay>
           </FeaturedSection>
-        )}
+        )} */}
 
         {loading ? (
           <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',minHeight:'220px'}}>
@@ -1012,28 +1181,28 @@ function Home() {
             </button>
           </div>
         )}
-      </AppFade>
-      {showModal && (
-        <div style={{position: 'fixed', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000}}>
-          <div style={{background:'#232336', color:'#fff', padding:'2rem 2.5rem', borderRadius:18, boxShadow:'0 2px 12px #0008', minWidth:320, textAlign:'center', position:'relative'}}>
-            <h2 style={{marginBottom:'1rem'}}>User Profile</h2>
-            <div style={{marginBottom:'1.2rem'}}>
-              <strong>Username:</strong> {user}
+        {showModal && (
+          <div style={{position: 'fixed', top:0, left:0, right:0, bottom:0, background:'rgba(0,0,0,0.6)', display:'flex', alignItems:'center', justifyContent:'center', zIndex:1000}}>
+            <div style={{background:'#232336', color:'#fff', padding:'2rem 2.5rem', borderRadius:18, boxShadow:'0 2px 12px #0008', minWidth:320, textAlign:'center', position:'relative'}}>
+              <h2 style={{marginBottom:'1rem'}}>User Profile</h2>
+              <div style={{marginBottom:'1.2rem'}}>
+                <strong>Username:</strong> {user}
+              </div>
+              <div style={{marginBottom:'1.2rem'}}>
+                <strong>Email:</strong> (hidden for now)
+              </div>
+              <div style={{marginBottom:'1.2rem', color:'#aaa'}}>
+                More profile features coming soon!
+              </div>
+              <button onClick={() => setShowModal(false)} style={{marginTop:'1rem', padding:'0.5rem 1.5rem', borderRadius:12, background:'#A35C7A', color:'#fff', border:'none', fontWeight:700, cursor:'pointer'}}>Close</button>
             </div>
-            <div style={{marginBottom:'1.2rem'}}>
-              <strong>Email:</strong> (hidden for now)
-            </div>
-            <div style={{marginBottom:'1.2rem', color:'#aaa'}}>
-              More profile features coming soon!
-            </div>
-            <button onClick={() => setShowModal(false)} style={{marginTop:'1rem', padding:'0.5rem 1.5rem', borderRadius:12, background:'#A35C7A', color:'#fff', border:'none', fontWeight:700, cursor:'pointer'}}>Close</button>
           </div>
-        </div>
-      )}
-      {/* 1. Scroll to Top Button */}
-      {showScroll && (
-        <ScrollTopBtn onClick={scrollToTop} title="Back to top">↑</ScrollTopBtn>
-      )}
+        )}
+        {/* 1. Scroll to Top Button */}
+        {showScroll && (
+          <ScrollTopBtn onClick={scrollToTop} title="Back to top">↑</ScrollTopBtn>
+        )}
+      </AppFade>
     </>
   );
 }
