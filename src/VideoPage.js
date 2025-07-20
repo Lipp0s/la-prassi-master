@@ -358,9 +358,6 @@ function VideoPage() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  console.log('VideoPage loaded, video:', video);
-  console.log('VideoPage id:', id);
-
   const loadVideo = React.useCallback(async () => {
     if (video) {
       setLoading(false);
@@ -371,10 +368,8 @@ function VideoPage() {
       const API_URL = 'http://localhost:8000';
       const response = await fetch(`${API_URL}/get_movies.php`);
       const data = await response.json();
-      console.log('loadVideo response:', data);
       if (data.success && data.movies) {
         const foundVideo = data.movies.find(v => v.id === parseInt(id));
-        console.log('foundVideo:', foundVideo);
         if (foundVideo) {
           setVideo(foundVideo);
         }
@@ -507,7 +502,6 @@ function VideoPage() {
   };
 
   const handleVideoClick = () => {
-    console.log('Video clicked, trailer_id:', video.trailer_id);
     if (video.trailer_id) {
       setShowVideoModal(true);
     } else {

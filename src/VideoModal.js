@@ -167,8 +167,6 @@ const PlayIcon = styled.div`
 function VideoModal({ videoId, onClose, videoTitle = "Movie Trailer" }) {
   const [isLoading, setIsLoading] = React.useState(true);
   
-  console.log('VideoModal received videoId:', videoId);
-  
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();

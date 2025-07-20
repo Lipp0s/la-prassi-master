@@ -1,10 +1,10 @@
+// Boia de (Tipica espressione livornese)
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Toaster } from 'sonner';
 
-// Lazy loading per migliorare le performance
 const Home = lazy(() => import('./Home'));
 const Login = lazy(() => import('./Login'));
 const Register = lazy(() => import('./Register'));
@@ -13,14 +13,13 @@ const Profile = lazy(() => import('./Profile'));
 const VideoPage = lazy(() => import('./VideoPage'));
 const PublicProfile = lazy(() => import('./PublicProfile'));
 
-// Palette Color Hunt ufficiale
 const COLORS = {
-  primary: '#522258',      // Viola scuro
-  secondary: '#8C3061',    // Viola medio  
-  accent: '#C63C51',       // Corallo
-  highlight: '#D95F59',    // Corallo chiaro
-  text: '#FFFFFF',         // Bianco
-  textMuted: '#B0B0B0',    // Grigio chiaro
+  primary: '#522258',
+  secondary: '#8C3061',
+  accent: '#C63C51',
+  highlight: '#D95F59',
+  text: '#FFFFFF',
+  textMuted: '#B0B0B0',
   glass: 'rgba(255, 255, 255, 0.05)',
   glassBorder: 'rgba(255, 255, 255, 0.1)',
   glassHover: 'rgba(255, 255, 255, 0.08)',
@@ -59,7 +58,6 @@ const Spinner = styled.div`
   border-top: 3px solid ${COLORS.accent};
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  
   @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -71,21 +69,17 @@ const LoadingText = styled.div`
   font-size: 1.1rem;
 `;
 
-// Error Boundary Component
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
   }
-
   static getDerivedStateFromError(error) {
     return { hasError: true };
   }
-
   componentDidCatch(error, errorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
   }
-
   render() {
     if (this.state.hasError) {
       return (
@@ -117,7 +111,6 @@ class ErrorBoundary extends React.Component {
         </div>
       );
     }
-
     return this.props.children;
   }
 }
@@ -125,7 +118,7 @@ class ErrorBoundary extends React.Component {
 function App() {
   return (
     <ErrorBoundary>
-      <GoogleOAuthProvider clientId="175770132889-9bcso2m8fpa79iv31q1funakmfn3ced3.apps.googleusercontent.com">
+      <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
         <Router>
           <AppContainer>
             <Toaster

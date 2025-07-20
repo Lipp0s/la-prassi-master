@@ -1,16 +1,15 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { useNavigate, Link } from 'react-router-dom';
 import { FaHeart, FaRegHeart, FaSearch, FaPlay, FaStar } from 'react-icons/fa';
 
-// New Color Hunt Palette
 const COLORS = {
-  primary: '#FCEF91',      // Light yellow
-  secondary: '#FB9E3A',    // Orange
-  accent: '#E6521F',       // Dark orange
-  highlight: '#EA2F14',    // Red
-  text: '#2C2C2C',         // Dark gray for contrast
-  textMuted: '#666666',    // Medium gray
+  primary: '#FCEF91',
+  secondary: '#FB9E3A',
+  accent: '#E6521F',
+  highlight: '#EA2F14',
+  text: '#2C2C2C',
+  textMuted: '#666666',
   glass: 'rgba(252, 239, 145, 0.1)',
   glassBorder: 'rgba(251, 158, 58, 0.2)',
   glassHover: 'rgba(252, 239, 145, 0.15)',
@@ -22,7 +21,6 @@ const COLORS = {
 
 const MAIN_GRADIENT = `linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.secondary} 50%, ${COLORS.accent} 100%)`;
 
-// Hero Section
 const HeroSection = styled.section`
   min-height: 100vh;
   background: ${MAIN_GRADIENT};
@@ -31,7 +29,6 @@ const HeroSection = styled.section`
   justify-content: center;
   position: relative;
   overflow: hidden;
-  
   &::before {
     content: '';
     position: absolute;
@@ -96,7 +93,6 @@ const CTAButton = styled.button`
   }
 `;
 
-// Navigation
 const Navbar = styled.nav`
   position: fixed;
   top: 0;
@@ -149,7 +145,6 @@ const NavButton = styled.button`
   }
 `;
 
-// Main Content
 const MainContent = styled.main`
   background: ${COLORS.primary};
   min-height: 100vh;
@@ -198,7 +193,6 @@ const SearchIcon = styled(FaSearch)`
   font-size: 1.2rem;
 `;
 
-// Video Grid
 const VideoGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -318,7 +312,6 @@ const FavoriteButton = styled.button`
   }
 `;
 
-// Loading States
 const LoadingGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -337,7 +330,6 @@ const LoadingCard = styled.div`
   }
 `;
 
-// Categories
 const CategoryTabs = styled.div`
   display: flex;
   justify-content: center;
@@ -363,7 +355,6 @@ const CategoryTab = styled.button`
   }
 `;
 
-// Empty State
 const EmptyState = styled.div`
   text-align: center;
   padding: 4rem 2rem;
@@ -376,7 +367,6 @@ const EmptyIcon = styled.div`
   color: ${COLORS.accent};
 `;
 
-// Scroll to Top
 const ScrollToTop = styled.button`
   position: fixed;
   bottom: 2rem;
@@ -397,7 +387,23 @@ const ScrollToTop = styled.button`
   }
 `;
 
-// Categories data
+const EasterEgg = styled.div`
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  background: rgba(230, 82, 31, 0.92);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  z-index: 9999;
+  opacity: 0.85;
+  letter-spacing: 1px;
+  user-select: none;
+`;
+
 const CATEGORIES = [
   { key: 'trailers', label: 'Trailers', icon: '🎬' },
   { key: 'music', label: 'Music', icon: '🎵' },
@@ -416,8 +422,10 @@ function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showEasterEgg, setShowEasterEgg] = useState(false);
+  const clickCount = useRef(0);
+  const lastClickTime = useRef(0);
 
-  // Load user session
   useEffect(() => {
     const sessionToken = localStorage.getItem('sessionToken');
     const userInfo = localStorage.getItem('userInfo');
@@ -429,7 +437,6 @@ function Home() {
     }
   }, []);
 
-  // Load favorites
   const loadFavorites = async (token) => {
     try {
       const API_URL = 'http://localhost:8000';
@@ -445,7 +452,6 @@ function Home() {
     }
   };
 
-  // Load videos for category
   const loadVideos = async (category) => {
     setLoading(true);
     try {
@@ -461,12 +467,10 @@ function Home() {
     setLoading(false);
   };
 
-  // Load initial videos
   useEffect(() => {
     loadVideos(activeCategory);
   }, [activeCategory]);
 
-  // Handle scroll
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
@@ -475,7 +479,6 @@ function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Toggle favorite
   const toggleFavorite = async (videoId) => {
     if (!loggedIn) {
       alert('You must be logged in to add favorites');
@@ -506,7 +509,6 @@ function Home() {
     }
   };
 
-  // Handle logout
   const handleLogout = () => {
     localStorage.removeItem('sessionToken');
     localStorage.removeItem('userInfo');
@@ -515,7 +517,6 @@ function Home() {
     setFavorites([]);
   };
 
-  // Filter videos based on search
   const filteredVideos = useMemo(() => {
     const categoryVideos = videos[activeCategory] || [];
     if (!search) return categoryVideos;
@@ -527,11 +528,25 @@ function Home() {
     );
   }, [videos, activeCategory, search]);
 
+  const handleLogoClick = () => {
+    const now = Date.now();
+    if (now - lastClickTime.current < 800) {
+      clickCount.current += 1;
+    } else {
+      clickCount.current = 1;
+    }
+    lastClickTime.current = now;
+    if (clickCount.current >= 5) {
+      setShowEasterEgg(true);
+      clickCount.current = 0;
+    }
+  };
+
   return (
     <>
       <Navbar>
         <NavContainer>
-          <Logo>
+          <Logo onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
             <span style={{ fontSize: '2rem' }}>🎬</span>
             BOIOLAX
           </Logo>
@@ -646,6 +661,7 @@ function Home() {
           ↑
         </ScrollToTop>
       )}
+      {showEasterEgg && <EasterEgg>Boia de, love u George 💖</EasterEgg>}
     </>
   );
 }

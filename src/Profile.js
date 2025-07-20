@@ -397,25 +397,28 @@ function Profile() {
   const [editingNickname, setEditingNickname] = useState(false);
   const [nicknameInput, setNicknameInput] = useState(userData?.nickname || '');
   const [nicknameError, setNicknameError] = useState('');
+  const [profileError, setProfileError] = useState('');
+  const [profileErrorType, setProfileErrorType] = useState(''); // 'auth', 'network', 'other'
 
   const API_URL = 'http://localhost:8000';
 
   const loadUserData = React.useCallback(async () => {
+    setLoading(true);
+    setProfileError('');
+    setProfileErrorType('');
     const sessionToken = localStorage.getItem('sessionToken');
     if (!sessionToken) {
-      navigate('/login');
+      setProfileError('You are not logged in. Please log in to view your profile.');
+      setProfileErrorType('auth');
+      setLoading(false);
       return;
     }
-
     try {
-      const API_URL = 'http://localhost:8000';
-      
       // Load user profile
       const profileResponse = await fetch(`${API_URL}/get_user_profile.php`, {
         headers: { 'Authorization': 'Bearer ' + sessionToken }
       });
       const profileData = await profileResponse.json();
-      
       if (profileData.success) {
         setUserData(profileData.user);
         setFormData({
@@ -423,8 +426,10 @@ function Profile() {
           profile_picture_url: profileData.user.profile_picture_url || ''
         });
       } else {
-        toast.error(profileData.message || 'Failed to load profile');
-        navigate('/login');
+        setProfileError(profileData.message || 'Failed to load profile');
+        setProfileErrorType(profileData.message && profileData.message.toLowerCase().includes('token') ? 'auth' : 'other');
+        console.error('Profile error:', profileData.message);
+        setLoading(false);
         return;
       }
 
@@ -507,12 +512,13 @@ function Profile() {
       }
     } catch (error) {
       console.error('Error loading user data:', error);
-      toast.error('Connection error');
-      navigate('/login');
+      setProfileError('Connection error. Please check your network and try again.');
+      setProfileErrorType('network');
+      setLoading(false);
+      return;
     }
-    
     setLoading(false);
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     loadUserData();
@@ -652,6 +658,29 @@ function Profile() {
     );
   }
 
+  if (profileError) {
+    return (
+      <ProfileContainer>
+        <ProfileCard>
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <div style={{ color: COLORS.highlight, fontWeight: 700, fontSize: '1.2rem', marginBottom: 16 }}>{profileError}</div>
+            {profileErrorType === 'auth' ? (
+              <>
+                <Button onClick={() => navigate('/login')}>Go to Login</Button>
+                <Button $secondary style={{ marginLeft: 12 }} onClick={() => navigate('/')}>Back to Home</Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={loadUserData}>Retry</Button>
+                <Button $secondary style={{ marginLeft: 12 }} onClick={() => navigate('/')}>Back to Home</Button>
+              </>
+            )}
+          </div>
+        </ProfileCard>
+      </ProfileContainer>
+    );
+  }
+
   return (
     <ProfileContainer>
       <ProfileCard>
@@ -667,8 +696,6 @@ function Profile() {
             </UserIcon>
             <UserDetails>
               <Username>{userData?.nickname ? userData.nickname : 'Choose your nickname!'}</Username>
-              {/* Optionally, show email in a smaller, muted style below or remove entirely */}
-              {/* <Email><FaEnvelope />{user.email}</Email> */}
             </UserDetails>
           </UserInfo>
         </Header>
