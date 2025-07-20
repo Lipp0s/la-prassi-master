@@ -15,15 +15,20 @@ try {
     $headers = getallheaders();
     $authHeader = $headers['Authorization'] ?? '';
     
+    // Debug
+    error_log("Auth header: " . $authHeader);
+    
     if (!preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
         echo json_encode([
             'success' => false,
-            'message' => 'Authorization header missing'
+            'message' => 'Authorization header missing',
+            'debug' => $authHeader
         ]);
         exit;
     }
     
     $token = $matches[1];
+    error_log("Token: " . $token);
     
     // Find session
     $stmt = $conn->prepare('
@@ -42,50 +47,41 @@ try {
         exit;
     }
     
-    // Get user reviews
+    // Get user data
     $stmt = $conn->prepare('
-        SELECT 
-            r.id,
-            r.title,
-            r.review,
-            r.rating,
-            r.created_at,
-            r.video_id,
-            m.title as movie_title,
-            m.poster_url as movie_poster
-        FROM reviews r
-        LEFT JOIN movies m ON r.video_id = m.id
-        WHERE r.user_id = ?
-        ORDER BY r.created_at DESC
+        SELECT id, username, email, nickname, profile_picture_url, created_at
+        FROM users 
+        WHERE id = ?
     ');
     $stmt->execute([$session['user_id']]);
-    $reviews = $stmt->fetchAll();
+    $user = $stmt->fetch();
     
-    // Format data
-    foreach ($reviews as &$review) {
-        $review['id'] = (int)$review['id'];
-        $review['rating'] = (int)$review['rating'];
-        $review['video_id'] = (int)$review['video_id'];
-        $review['created_at'] = date('Y-m-d H:i:s', strtotime($review['created_at']));
+    if (!$user) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'User not found'
+        ]);
+        exit;
     }
     
     echo json_encode([
         'success' => true,
-        'reviews' => $reviews,
-        'count' => count($reviews)
+        'user' => $user
     ]);
     
 } catch (PDOException $e) {
     error_log("Database error: " . $e->getMessage());
     echo json_encode([
         'success' => false,
-        'message' => 'Database error occurred'
+        'message' => 'Database error occurred',
+        'error' => $e->getMessage()
     ]);
 } catch (Exception $e) {
     error_log("General error: " . $e->getMessage());
     echo json_encode([
         'success' => false,
-        'message' => 'An error occurred'
+        'message' => 'An error occurred',
+        'error' => $e->getMessage()
     ]);
 }
 ?> 

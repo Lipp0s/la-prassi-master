@@ -8,6 +8,8 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json');
 
+require_once 'db.php';
+
 $API_KEY = 'AIzaSyAK4HK32jIG4Z_HpldaEis2YSyNXyefDu0';
 
 // Mappa delle categorie verso query di ricerca
@@ -88,6 +90,18 @@ if (!isset($data['items']) || !is_array($data['items']) || count($data['items'])
             'channel' => 'Blender Foundation',
         ],
     ];
+    // Calcola la media rating anche per i video statici
+    foreach ($videos as &$video) {
+        $avgRating = null;
+        $stmt = $db->prepare('SELECT AVG(rating) as avg_rating FROM reviews WHERE video_id = :video_id');
+        $stmt->execute([':video_id' => $video['id']]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row && $row['avg_rating'] !== null) {
+            $avgRating = round(floatval($row['avg_rating']), 2);
+        }
+        $video['average_rating'] = $avgRating;
+    }
+    unset($video);
     echo json_encode(['success' => true, 'videos' => $videos]);
     exit;
 }
@@ -98,12 +112,22 @@ shuffle($data['items']);
 // Mostra tutti i video trovati, senza filtro anti-shorts
 $videos = [];
 foreach ($data['items'] as $item) {
+    $videoId = $item['id']['videoId'];
+    // Calcola la media dei rating per questo video
+    $avgRating = null;
+    $stmt = $db->prepare('SELECT AVG(rating) as avg_rating FROM reviews WHERE video_id = :video_id');
+    $stmt->execute([':video_id' => $videoId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row && $row['avg_rating'] !== null) {
+        $avgRating = round(floatval($row['avg_rating']), 2);
+    }
     $videos[] = [
-        'id' => $item['id']['videoId'],
+        'id' => $videoId,
         'title' => $item['snippet']['title'],
         'description' => $item['snippet']['description'],
         'thumb' => $item['snippet']['thumbnails']['high']['url'],
         'channel' => $item['snippet']['channelTitle'],
+        'average_rating' => $avgRating
     ];
 }
 

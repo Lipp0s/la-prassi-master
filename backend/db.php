@@ -31,4 +31,32 @@ $conn->exec("CREATE TABLE IF NOT EXISTS users (
 } catch(PDOException $e) {
     die("Connection failed: " . $e->getMessage());
 }
+
+// Ensure users table has nickname and profile_picture_url columns
+try {
+    $conn->exec("ALTER TABLE users ADD COLUMN nickname TEXT UNIQUE NOT NULL");
+} catch (Exception $e) {}
+try {
+    $conn->exec("ALTER TABLE users ADD COLUMN profile_picture_url TEXT");
+} catch (Exception $e) {}
+
+try {
+    $conn->exec("ALTER TABLE users ALTER COLUMN nickname DROP NOT NULL");
+} catch (Exception $e) {}
+
+// Crea la tabella movies se non esiste
+try {
+    $conn->exec("CREATE TABLE IF NOT EXISTS movies (
+        id INTEGER PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        overview TEXT,
+        poster_url TEXT,
+        release_date DATE,
+        vote_average FLOAT,
+        trailer_id VARCHAR(20),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+} catch (Exception $e) {}
+
+$db = $conn;
 ?> 

@@ -6,11 +6,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(0);
 header("Content-Type: application/json");
-include 'db.php';
+require_once 'db.php';
 
 // Ricevi il token dal frontend
 $data = json_decode(file_get_contents("php://input"));

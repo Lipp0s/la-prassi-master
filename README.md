@@ -88,3 +88,34 @@
 ## Note
 - Per sviluppo, la quota API YouTube è limitata: usa la cache e il fallback per non bloccare la UX.
 - In produzione, monitora la quota e ottimizza le fetch. 
+
+# Environment Configuration for API URL
+
+To run the frontend with the correct backend API URL, set the environment variable `REACT_APP_API_URL` before starting the React app.
+
+## Esempi di configurazione
+
+### 1. Sviluppo locale (solo PC)
+```
+REACT_APP_API_URL=http://localhost:8000 npm start
+```
+
+### 2. Accesso da mobile sulla stessa rete (usando l'IP del PC)
+```
+REACT_APP_API_URL=http://192.168.0.52:8000 npm start
+```
+
+### 3. Accesso pubblico/mobile tramite ngrok
+- Avvia ngrok: `ngrok http 8000`
+- Usa l'URL fornito da ngrok, ad esempio:
+```
+REACT_APP_API_URL=https://abcd1234.ngrok.io npm start
+```
+
+**Nota:**
+- Ricordati di aggiornare anche Google Cloud Console con il dominio ngrok tra le origini autorizzate per OAuth.
+- Puoi anche creare un file `.env` nella root del progetto React con la riga:
+  ```
+  REACT_APP_API_URL=...
+  ```
+  e poi lanciare `npm start` normalmente. 

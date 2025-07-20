@@ -1,42 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { FaHeart, FaRegHeart, FaEdit, FaTrash, FaStar, FaUser, FaEnvelope } from 'react-icons/fa';
+import { FaUser, FaEdit, FaSignOutAlt, FaCamera, FaStar, FaRegHeart, FaTrash } from 'react-icons/fa';
+import { toast } from 'sonner';
 
-// Palette Color Hunt ufficiale
 const COLORS = {
-  primary: '#522258',      // Viola scuro
-  secondary: '#8C3061',    // Viola medio  
-  accent: '#C63C51',       // Corallo
-  highlight: '#D95F59',    // Corallo chiaro
-  text: '#FFFFFF',         // Bianco
-  textMuted: '#B0B0B0',    // Grigio chiaro
-  glass: 'rgba(255, 255, 255, 0.05)',
-  glassBorder: 'rgba(255, 255, 255, 0.1)',
-  glassHover: 'rgba(255, 255, 255, 0.08)',
-  glassShadow: 'rgba(0, 0, 0, 0.3)',
-  shadowHover: 'rgba(217, 95, 89, 0.3)',
+  primary: '#FCEF91',
+  secondary: '#FB9E3A',
+  accent: '#E6521F',
+  highlight: '#EA2F14',
+  text: '#2C2C2C',
+  textMuted: '#666666',
+  glass: 'rgba(252, 239, 145, 0.1)',
+  glassBorder: 'rgba(251, 158, 58, 0.2)',
+  glassHover: 'rgba(252, 239, 145, 0.15)',
+  glassShadow: 'rgba(0, 0, 0, 0.2)',
+  shadowHover: 'rgba(230, 82, 31, 0.3)',
   white: '#FFFFFF',
   black: '#000000'
 };
 
 const ProfileContainer = styled.div`
   min-height: 100vh;
-  background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.secondary} 100%);
+  background: linear-gradient(135deg, ${COLORS.primary} 0%, ${COLORS.secondary} 50%, ${COLORS.accent} 100%);
   padding: 2rem;
-  color: ${COLORS.text};
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 `;
 
 const ProfileCard = styled.div`
-  background: rgba(35, 35, 55, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 2rem;
   padding: 3rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  box-shadow: 0 8px 32px 0 ${COLORS.accent}33, 0 2px 12px #000a;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid ${COLORS.glassBorder};
+  max-width: 1000px;
+  width: 100%;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(251, 158, 58, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+`;
+
+const BackButton = styled.button`
+  background: ${COLORS.accent};
+  color: ${COLORS.white};
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: ${COLORS.highlight};
+    transform: translateY(-2px);
+  }
 `;
 
 const Header = styled.div`
@@ -46,35 +64,29 @@ const Header = styled.div`
 
 const Title = styled.h1`
   font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  background: linear-gradient(90deg, ${COLORS.secondary} 0%, ${COLORS.primary} 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  color: ${COLORS.text};
+  margin-bottom: 2rem;
 `;
 
 const UserInfo = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem;
   margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: ${COLORS.glass};
-  border-radius: 1rem;
-  border: 1px solid ${COLORS.glassBorder};
 `;
 
 const UserIcon = styled.div`
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
+  background: ${COLORS.accent};
   border-radius: 50%;
-  background: linear-gradient(135deg, ${COLORS.secondary} 0%, ${COLORS.primary} 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  color: ${COLORS.text};
+  font-size: 2rem;
+  color: ${COLORS.white};
 `;
 
 const UserDetails = styled.div`
@@ -82,98 +94,107 @@ const UserDetails = styled.div`
 `;
 
 const Username = styled.h2`
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
   color: ${COLORS.text};
+  margin-bottom: 0.5rem;
 `;
 
-const Email = styled.p`
-  color: ${COLORS.textMuted};
+const Email = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: ${COLORS.textMuted};
+  font-size: 1rem;
 `;
 
 const TabsContainer = styled.div`
   display: flex;
+  justify-content: center;
   gap: 1rem;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid ${COLORS.glassBorder};
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
 `;
 
 const Tab = styled.button`
-  background: ${props => props.active ? COLORS.accent : 'transparent'};
-  color: ${COLORS.text};
-  border: none;
+  background: ${props => props.$active ? COLORS.accent : 'transparent'};
+  color: ${props => props.$active ? COLORS.white : COLORS.text};
+  border: 2px solid ${COLORS.accent};
   padding: 1rem 2rem;
-  border-radius: 0.75rem 0.75rem 0 0;
+  border-radius: 25px;
   cursor: pointer;
-  font-weight: 600;
   transition: all 0.3s ease;
+  font-weight: 600;
   
   &:hover {
-    background: ${props => props.active ? COLORS.accent : COLORS.glassHover};
+    background: ${COLORS.accent};
+    color: ${COLORS.white};
+    transform: translateY(-2px);
   }
 `;
 
 const Section = styled.div`
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 `;
 
 const SectionTitle = styled.h3`
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  margin-bottom: 1rem;
   color: ${COLORS.text};
+  margin-bottom: 2rem;
+  text-align: center;
 `;
 
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: 2rem;
 `;
 
-const Card = styled.div`
-  background: ${COLORS.glass};
-  border: 1px solid ${COLORS.glassBorder};
+const VideoCard = styled.div`
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 1rem;
-  padding: 1.5rem;
+  overflow: hidden;
+  cursor: pointer;
   transition: all 0.3s ease;
+  border: 1px solid rgba(251, 158, 58, 0.2);
   
   &:hover {
-    background: ${COLORS.glassHover};
-    transform: translateY(-2px);
-    box-shadow: 0 4px 24px ${COLORS.accent}33;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-color: ${COLORS.accent};
   }
-`;
-
-const VideoCard = styled(Card)`
-  cursor: pointer;
 `;
 
 const VideoThumb = styled.img`
   width: 100%;
-  height: 150px;
+  height: 180px;
   object-fit: cover;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
 `;
 
 const VideoTitle = styled.h4`
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
   color: ${COLORS.text};
+  margin: 1rem;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `;
 
 const VideoChannel = styled.p`
   color: ${COLORS.textMuted};
+  margin: 0 1rem 1rem 1rem;
   font-size: 0.9rem;
 `;
 
-const ReviewCard = styled(Card)`
-  position: relative;
+const ReviewCard = styled.div`
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(251, 158, 58, 0.2);
 `;
 
 const ReviewHeader = styled.div`
@@ -184,8 +205,8 @@ const ReviewHeader = styled.div`
 `;
 
 const ReviewTitle = styled.h4`
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: ${COLORS.text};
   margin-bottom: 0.5rem;
 `;
@@ -193,63 +214,67 @@ const ReviewTitle = styled.h4`
 const ReviewRating = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  color: #FFD700;
-  font-size: 0.9rem;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
 `;
 
 const ReviewText = styled.p`
   color: ${COLORS.textMuted};
-  line-height: 1.5;
+  line-height: 1.6;
   margin-bottom: 1rem;
 `;
 
-const ReviewDate = styled.p`
+const ReviewDate = styled.div`
   color: ${COLORS.textMuted};
-  font-size: 0.8rem;
+  font-size: 0.9rem;
+  font-style: italic;
 `;
 
 const ActionButtons = styled.div`
   display: flex;
   gap: 0.5rem;
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
 `;
 
 const ActionButton = styled.button`
-  background: ${props => props.delete ? COLORS.highlight : COLORS.accent};
-  color: ${COLORS.text};
+  background: ${props => props.$delete ? '#e74c3c' : COLORS.accent};
+  color: ${COLORS.white};
   border: none;
-  border-radius: 0.5rem;
   padding: 0.5rem;
+  border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   &:hover {
     transform: scale(1.1);
+    background: ${props => props.$delete ? '#c0392b' : COLORS.highlight};
   }
 `;
 
 const EmptyState = styled.div`
   text-align: center;
-  padding: 3rem;
+  padding: 4rem 2rem;
   color: ${COLORS.textMuted};
 `;
 
-const BackButton = styled.button`
-  background: ${COLORS.accent};
-  color: ${COLORS.text};
-  border: none;
-  border-radius: 0.75rem;
-  padding: 0.75rem 1.5rem;
+const Button = styled.button`
+  background: ${props => props.secondary ? 'transparent' : COLORS.accent};
+  color: ${props => props.secondary ? COLORS.text : COLORS.white};
+  border: ${props => props.secondary ? `2px solid ${COLORS.accent}` : 'none'};
+  padding: 1rem 2rem;
+  border-radius: 25px;
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
-  margin-bottom: 2rem;
+  margin: 0 0.5rem;
   
   &:hover {
-    background: ${COLORS.highlight};
+    background: ${props => props.secondary ? COLORS.accent : COLORS.highlight};
+    color: ${COLORS.white};
     transform: translateY(-2px);
   }
 `;
@@ -268,49 +293,43 @@ const EditModal = styled.div`
 `;
 
 const EditForm = styled.div`
-  background: rgba(35, 35, 55, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 1rem;
   padding: 2rem;
-  width: 90%;
   max-width: 500px;
+  width: 90%;
   backdrop-filter: blur(20px);
+  border: 1px solid rgba(251, 158, 58, 0.2);
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 `;
 
 const Label = styled.label`
   display: block;
-  margin-bottom: 0.5rem;
   color: ${COLORS.text};
   font-weight: 600;
+  margin-bottom: 0.5rem;
+`;
+
+const InputWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
 `;
 
 const Input = styled.input`
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid ${COLORS.glassBorder};
-  border-radius: 0.5rem;
-  background: ${COLORS.glass};
+  box-sizing: border-box;
+  padding: 0.8rem 1.2rem 0.8rem 2.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(251, 158, 58, 0.3);
+  border-radius: 0.75rem;
   color: ${COLORS.text};
-  
-  &:focus {
-    outline: none;
-    border-color: ${COLORS.accent};
-  }
-`;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 
-const TextArea = styled.textarea`
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid ${COLORS.glassBorder};
-  border-radius: 0.5rem;
-  background: ${COLORS.glass};
-  color: ${COLORS.text};
-  min-height: 100px;
-  resize: vertical;
-  
   &:focus {
     outline: none;
     border-color: ${COLORS.accent};
@@ -319,11 +338,34 @@ const TextArea = styled.textarea`
 
 const Select = styled.select`
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid ${COLORS.glassBorder};
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(251, 158, 58, 0.3);
   border-radius: 0.5rem;
-  background: ${COLORS.glass};
   color: ${COLORS.text};
+  font-size: 1rem;
+  
+  &:focus {
+    outline: none;
+    border-color: ${COLORS.accent};
+  }
+  
+  option {
+    background: ${COLORS.white};
+    color: ${COLORS.text};
+  }
+`;
+
+const TextArea = styled.textarea`
+  width: 100%;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(251, 158, 58, 0.3);
+  border-radius: 0.5rem;
+  color: ${COLORS.text};
+  font-size: 1rem;
+  min-height: 100px;
+  resize: vertical;
   
   &:focus {
     outline: none;
@@ -334,25 +376,14 @@ const Select = styled.select`
 const ButtonGroup = styled.div`
   display: flex;
   gap: 1rem;
-  margin-top: 1.5rem;
-`;
-
-const Button = styled.button`
-  background: ${props => props.secondary ? 'transparent' : COLORS.accent};
-  color: ${COLORS.text};
-  border: 1px solid ${props => props.secondary ? COLORS.glassBorder : 'transparent'};
-  border-radius: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: ${props => props.secondary ? COLORS.glassHover : COLORS.highlight};
-  }
+  justify-content: flex-end;
+  margin-top: 2rem;
 `;
 
 function Profile() {
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+  const [formData, setFormData] = useState({ nickname: '', profile_picture_url: '' });
   const [activeTab, setActiveTab] = useState('favorites');
   const [favorites, setFavorites] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -363,54 +394,72 @@ function Profile() {
     rating: 5,
     review: ''
   });
-  const navigate = useNavigate();
+  const [editingNickname, setEditingNickname] = useState(false);
+  const [nicknameInput, setNicknameInput] = useState(userData?.nickname || '');
+  const [nicknameError, setNicknameError] = useState('');
 
-  const user = localStorage.getItem('username');
-  const sessionToken = localStorage.getItem('session_token');
+  const API_URL = 'http://localhost:8000';
 
-  useEffect(() => {
+  const loadUserData = React.useCallback(async () => {
+    const sessionToken = localStorage.getItem('sessionToken');
     if (!sessionToken) {
       navigate('/login');
       return;
     }
-    
-    loadUserData();
-  }, [sessionToken, navigate]);
 
-  const loadUserData = async () => {
     try {
-      // Carica preferiti
-      const favoritesResponse = await fetch('http://localhost:8000/get_favorites.php', {
+      const API_URL = 'http://localhost:8000';
+      
+      // Load user profile
+      const profileResponse = await fetch(`${API_URL}/get_user_profile.php`, {
+        headers: { 'Authorization': 'Bearer ' + sessionToken }
+      });
+      const profileData = await profileResponse.json();
+      
+      if (profileData.success) {
+        setUserData(profileData.user);
+        setFormData({
+          nickname: profileData.user.nickname || '',
+          profile_picture_url: profileData.user.profile_picture_url || ''
+        });
+      } else {
+        toast.error(profileData.message || 'Failed to load profile');
+        navigate('/login');
+        return;
+      }
+
+      // Load favorites
+      const favoritesResponse = await fetch(`${API_URL}/get_favorites.php`, {
         headers: { 'Authorization': 'Bearer ' + sessionToken }
       });
       const favoritesData = await favoritesResponse.json();
       
       if (favoritesData.success) {
-        const favoriteIds = favoritesData.favorites || [];
+        const favorites = favoritesData.favorites || [];
         
-        // Carica i dettagli dei video preferiti
-        const videoDetails = [];
-        for (const videoId of favoriteIds) {
+        // Load full video details for favorites
+        const favoritesWithDetails = [];
+        for (const videoId of favorites) {
           try {
-            const videoResponse = await fetch(`http://localhost:8000/youtube_videos.php?category=trailers`);
+            const videoResponse = await fetch(`${API_URL}/get_movies.php`);
             const videoData = await videoResponse.json();
             
-            if (videoData.success && videoData.videos) {
-              const video = videoData.videos.find(v => v.id === videoId);
+            if (videoData.success && videoData.movies) {
+              const video = videoData.movies.find(v => v.id === parseInt(videoId));
               if (video) {
-                videoDetails.push(video);
+                favoritesWithDetails.push(video);
               }
             }
           } catch (error) {
-            console.error(`Errore nel caricamento del video ${videoId}:`, error);
+            console.error(`Error loading video ${videoId}:`, error);
           }
         }
         
-        setFavorites(videoDetails);
+        setFavorites(favoritesWithDetails);
       }
 
-      // Carica recensioni
-      const reviewsResponse = await fetch('http://localhost:8000/get_my_reviews.php', {
+      // Load reviews
+      const reviewsResponse = await fetch(`${API_URL}/get_my_reviews.php`, {
         headers: { 'Authorization': 'Bearer ' + sessionToken }
       });
       const reviewsData = await reviewsResponse.json();
@@ -418,37 +467,37 @@ function Profile() {
       if (reviewsData.success) {
         const reviews = reviewsData.reviews || [];
         
-        // Carica i dettagli dei video per le recensioni
+        // Load video details for reviews
         const reviewsWithVideoInfo = [];
         for (const review of reviews) {
           try {
-            const videoResponse = await fetch(`http://localhost:8000/youtube_videos.php?category=trailers`);
+            const videoResponse = await fetch(`${API_URL}/get_movies.php`);
             const videoData = await videoResponse.json();
             
-            if (videoData.success && videoData.videos) {
-              const video = videoData.videos.find(v => v.id === review.video_id);
+            if (videoData.success && videoData.movies) {
+              const video = videoData.movies.find(v => v.id === parseInt(review.video_id));
               if (video) {
                 reviewsWithVideoInfo.push({
                   ...review,
                   video_title: video.title,
-                  video_thumb: video.thumb,
-                  video_channel: video.channel
+                  video_thumb: video.poster_url,
+                  video_channel: video.release_date
                 });
               } else {
                 reviewsWithVideoInfo.push({
                   ...review,
-                  video_title: 'Video non trovato',
-                  video_thumb: 'https://via.placeholder.com/300x200/522258/ffffff?text=Video+Non+Trovato',
+                  video_title: 'Video not found',
+                  video_thumb: 'https://via.placeholder.com/300x200/FCEF91/2C2C2C?text=Video+Not+Found',
                   video_channel: 'Unknown'
                 });
               }
             }
           } catch (error) {
-            console.error(`Errore nel caricamento del video ${review.video_id}:`, error);
+            console.error(`Error loading video ${review.video_id}:`, error);
             reviewsWithVideoInfo.push({
               ...review,
-              video_title: 'Errore nel caricamento',
-              video_thumb: 'https://via.placeholder.com/300x200/522258/ffffff?text=Errore',
+              video_title: 'Error loading video',
+              video_thumb: 'https://via.placeholder.com/300x200/FCEF91/2C2C2C?text=Error',
               video_channel: 'Error'
             });
           }
@@ -457,17 +506,23 @@ function Profile() {
         setReviews(reviewsWithVideoInfo);
       }
     } catch (error) {
-      console.error('Errore nel caricamento dati:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error loading user data:', error);
+      toast.error('Connection error');
+      navigate('/login');
     }
-  };
+    
+    setLoading(false);
+  }, [navigate]);
+
+  useEffect(() => {
+    loadUserData();
+  }, [loadUserData]);
 
   const handleLogout = () => {
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('username');
-    localStorage.removeItem('session_token');
-    navigate('/login');
+    localStorage.removeItem('sessionToken');
+    localStorage.removeItem('userInfo');
+    toast('Logged out successfully!', { type: 'success' });
+    navigate('/');
   };
 
   const handleVideoClick = (videoId) => {
@@ -484,12 +539,13 @@ function Profile() {
   };
 
   const handleDeleteReview = async (reviewId) => {
-    if (!window.confirm('Sei sicuro di voler eliminare questa recensione?')) {
+    if (!window.confirm('Are you sure you want to delete this review?')) {
       return;
     }
 
+    const sessionToken = localStorage.getItem('sessionToken');
     try {
-      const response = await fetch('http://localhost:8000/delete_review.php', {
+      const response = await fetch(`${API_URL}/delete_review.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -497,24 +553,24 @@ function Profile() {
         },
         body: JSON.stringify({ review_id: reviewId })
       });
-
       const data = await response.json();
       
       if (data.success) {
+        toast.success('Review deleted!');
         setReviews(reviews.filter(r => r.id !== reviewId));
-        alert('Recensione eliminata con successo!');
       } else {
-        alert('Errore nell\'eliminazione della recensione');
+        toast.error('Error deleting review');
       }
     } catch (error) {
-      console.error('Errore:', error);
-      alert('Errore di connessione');
+      console.error('Error:', error);
+      alert('Connection error');
     }
   };
 
   const handleSaveReview = async () => {
+    const sessionToken = localStorage.getItem('sessionToken');
     try {
-      const response = await fetch('http://localhost:8000/edit_review.php', {
+      const response = await fetch(`${API_URL}/edit_review.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -527,7 +583,6 @@ function Profile() {
           review: editForm.review
         })
       });
-
       const data = await response.json();
       
       if (data.success) {
@@ -537,13 +592,45 @@ function Profile() {
             : r
         ));
         setEditingReview(null);
-        alert('Recensione aggiornata con successo!');
+        alert('Review updated successfully!');
       } else {
-        alert('Errore nell\'aggiornamento della recensione');
+        alert('Error updating review');
       }
     } catch (error) {
-      console.error('Errore:', error);
-      alert('Errore di connessione');
+      console.error('Error:', error);
+      alert('Connection error');
+    }
+  };
+
+  const handleNicknameSave = async () => {
+    setNicknameError('');
+    if (!nicknameInput.trim()) {
+      setNicknameError('Nickname is required');
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('nickname', nicknameInput.trim());
+      const sessionToken = localStorage.getItem('sessionToken');
+      const response = await fetch(`${API_URL}/update_profile.php`, {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + sessionToken },
+        body: formData
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast.success('Profile updated!');
+        setEditingNickname(false);
+        setNicknameError('');
+        setNicknameInput(nicknameInput.trim());
+        userData.nickname = nicknameInput.trim();
+        localStorage.setItem('userInfo', JSON.stringify(userData));
+      } else {
+        toast.error(result.message || 'Failed to update profile.');
+        setNicknameError(result.message || 'Failed to update profile.');
+      }
+    } catch (error) {
+      setNicknameError('Connection error. Please try again.');
     }
   };
 
@@ -558,7 +645,7 @@ function Profile() {
       <ProfileContainer>
         <ProfileCard>
           <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ color: COLORS.accent, fontSize: '1.2rem' }}>Caricamento...</div>
+            <div style={{ color: COLORS.accent, fontSize: '1.2rem' }}>Loading...</div>
           </div>
         </ProfileCard>
       </ProfileContainer>
@@ -569,43 +656,41 @@ function Profile() {
     <ProfileContainer>
       <ProfileCard>
         <BackButton onClick={() => navigate('/')}>
-          ← Torna alla Home
+          ← Back to Home
         </BackButton>
 
         <Header>
-          <Title>Profilo Utente</Title>
+          <Title>User Profile</Title>
           <UserInfo>
             <UserIcon>
               <FaUser />
             </UserIcon>
             <UserDetails>
-              <Username>{user}</Username>
-              <Email>
-                <FaEnvelope />
-                {user}@example.com
-              </Email>
+              <Username>{userData?.nickname ? userData.nickname : 'Choose your nickname!'}</Username>
+              {/* Optionally, show email in a smaller, muted style below or remove entirely */}
+              {/* <Email><FaEnvelope />{user.email}</Email> */}
             </UserDetails>
           </UserInfo>
         </Header>
 
         <TabsContainer>
           <Tab 
-            active={activeTab === 'favorites'} 
+            $active={activeTab === 'favorites'} 
             onClick={() => setActiveTab('favorites')}
           >
-            Preferiti ({favorites.length})
+            Favorites ({favorites.length})
           </Tab>
           <Tab 
-            active={activeTab === 'reviews'} 
+            $active={activeTab === 'reviews'} 
             onClick={() => setActiveTab('reviews')}
           >
-            Le Mie Recensioni ({reviews.length})
+            My Reviews ({reviews.length})
           </Tab>
         </TabsContainer>
 
         {activeTab === 'favorites' && (
           <Section>
-            <SectionTitle>I Tuoi Video Preferiti</SectionTitle>
+            <SectionTitle>Your Favorite Videos</SectionTitle>
             {favorites.length > 0 ? (
               <Grid>
                 {favorites.map((video) => (
@@ -619,8 +704,8 @@ function Profile() {
             ) : (
               <EmptyState>
                 <FaRegHeart style={{ fontSize: '3rem', marginBottom: '1rem', color: COLORS.textMuted }} />
-                <h3>Nessun video preferito</h3>
-                <p>I video che aggiungi ai preferiti appariranno qui</p>
+                <h3>No favorite videos</h3>
+                <p>Videos you add to favorites will appear here</p>
               </EmptyState>
             )}
           </Section>
@@ -628,7 +713,7 @@ function Profile() {
 
         {activeTab === 'reviews' && (
           <Section>
-            <SectionTitle>Le Tue Recensioni</SectionTitle>
+            <SectionTitle>Your Reviews</SectionTitle>
             {reviews.length > 0 ? (
               <Grid>
                 {reviews.map((review) => (
@@ -637,7 +722,7 @@ function Profile() {
                       <div>
                         <ReviewTitle>{review.title}</ReviewTitle>
                         <div style={{ color: COLORS.textMuted, fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                          Per: {review.video_title}
+                          For: {review.video_title}
                         </div>
                         <ReviewRating>
                           {renderStars(review.rating)}
@@ -650,14 +735,14 @@ function Profile() {
                         <ActionButton onClick={() => handleEditReview(review)}>
                           <FaEdit />
                         </ActionButton>
-                        <ActionButton delete onClick={() => handleDeleteReview(review.id)}>
+                        <ActionButton $delete onClick={() => handleDeleteReview(review.id)}>
                           <FaTrash />
                         </ActionButton>
                       </ActionButtons>
                     </ReviewHeader>
                     <ReviewText>{review.review}</ReviewText>
                     <ReviewDate>
-                      Pubblicata il {new Date(review.created_at).toLocaleDateString('it-IT')}
+                      Published on {new Date(review.created_at).toLocaleDateString('en-US')}
                     </ReviewDate>
                   </ReviewCard>
                 ))}
@@ -665,12 +750,37 @@ function Profile() {
             ) : (
               <EmptyState>
                 <FaStar style={{ fontSize: '3rem', marginBottom: '1rem', color: COLORS.textMuted }} />
-                <h3>Nessuna recensione</h3>
-                <p>Le recensioni che scrivi appariranno qui</p>
+                <h3>No reviews</h3>
+                <p>Reviews you write will appear here</p>
               </EmptyState>
             )}
           </Section>
         )}
+
+        <Section>
+          <SectionTitle>Nickname</SectionTitle>
+          {editingNickname || !userData?.nickname ? (
+            <div style={{ maxWidth: 400, margin: '0 auto', textAlign: 'center' }}>
+              <input
+                type="text"
+                value={nicknameInput}
+                onChange={e => setNicknameInput(e.target.value)}
+                placeholder="Choose your nickname"
+                style={{ padding: '0.8rem 1.2rem', borderRadius: '0.75rem', border: '1px solid #ccc', width: '100%', fontSize: '1.1rem' }}
+              />
+              {nicknameError && <div style={{ color: '#e74c3c', marginTop: 8 }}>{nicknameError}</div>}
+              <Button style={{ marginTop: 16 }} onClick={handleNicknameSave}>Save Nickname</Button>
+              {userData?.nickname && (
+                <Button $secondary style={{ marginLeft: 8 }} onClick={() => setEditingNickname(false)}>Cancel</Button>
+              )}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <span style={{ fontSize: '1.2rem', fontWeight: 600 }}>{userData.nickname}</span>
+              <Button $secondary style={{ marginLeft: 16 }} onClick={() => setEditingNickname(true)}>Edit</Button>
+            </div>
+          )}
+        </Section>
 
         <div style={{ textAlign: 'center', marginTop: '2rem' }}>
           <Button secondary onClick={handleLogout}>
@@ -682,47 +792,49 @@ function Profile() {
       {editingReview && (
         <EditModal>
           <EditForm>
-            <h3 style={{ marginBottom: '1.5rem', color: COLORS.text }}>Modifica Recensione</h3>
+            <h3 style={{ marginBottom: '1.5rem', color: COLORS.text }}>Edit Review</h3>
             
             <FormGroup>
-              <Label>Titolo</Label>
-              <Input
-                type="text"
-                value={editForm.title}
-                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                placeholder="Titolo della recensione"
-              />
+              <Label>Title</Label>
+              <InputWrapper>
+                <Input
+                  type="text"
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  placeholder="Review title"
+                />
+              </InputWrapper>
             </FormGroup>
 
             <FormGroup>
-              <Label>Valutazione</Label>
+              <Label>Rating</Label>
               <Select
                 value={editForm.rating}
                 onChange={(e) => setEditForm({ ...editForm, rating: parseInt(e.target.value) })}
               >
-                <option value={1}>1 stella</option>
-                <option value={2}>2 stelle</option>
-                <option value={3}>3 stelle</option>
-                <option value={4}>4 stelle</option>
-                <option value={5}>5 stelle</option>
+                <option value={1}>1 star</option>
+                <option value={2}>2 stars</option>
+                <option value={3}>3 stars</option>
+                <option value={4}>4 stars</option>
+                <option value={5}>5 stars</option>
               </Select>
             </FormGroup>
 
             <FormGroup>
-              <Label>Recensione</Label>
+              <Label>Review</Label>
               <TextArea
                 value={editForm.review}
                 onChange={(e) => setEditForm({ ...editForm, review: e.target.value })}
-                placeholder="Scrivi la tua recensione..."
+                placeholder="Write your review..."
               />
             </FormGroup>
 
             <ButtonGroup>
               <Button onClick={handleSaveReview}>
-                Salva Modifiche
+                Save Changes
               </Button>
               <Button secondary onClick={() => setEditingReview(null)}>
-                Annulla
+                Cancel
               </Button>
             </ButtonGroup>
           </EditForm>

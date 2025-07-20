@@ -1,5 +1,5 @@
 {
-  "name": "la-prassi",
+  "name": "boiolax",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -12,6 +12,7 @@
     "react-router-dom": "^7.6.2",
     "react-scripts": "5.0.1",
     "screenfull": "^6.0.2",
+    "sonner": "^2.0.6",
     "styled-components": "^6.1.19",
     "web-vitals": "^5.0.3"
   },
